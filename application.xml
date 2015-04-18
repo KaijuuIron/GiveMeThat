@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<!-- NMML reference: https://gist.github.com/1763850 -->
+	
+	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
+	<meta title="GiveMeThat" package="GiveMeThat" version="1.0.0" company="Al" />
+	
+	<!-- output -->
+	<app main="Main" file="GiveMeThat" path="bin" />
+	
+	<window background="#000000" fps="60" />
+	<window width="960" height="540" unless="mobile" />
+	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
+	
+	<!-- classpath, haxe libs -->
+	<source path="src" />
+	<haxelib name="openfl" />
+	<haxelib name="actuate" />
+	<haxelib name="tilelayer" />
+	
+	<!-- assets -->
+	<icon path="assets/openfl.svg" />
+	<assets path="assets/GiveMeThat/img" rename="img" />
+	<assets path="assets/GiveMeThat/audio" rename="audio" />
+	
+	<!-- optimize output
+	<haxeflag name="-dce full" /> -->
+	
+</project>
