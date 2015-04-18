@@ -32,7 +32,7 @@ class Unit extends Collidable
 	public var infected:Bool;
 	
 	//movement info
-	private var lastDirection:Int;
+	public var lastDirection:Int;
 	private var isMoving:Bool = false;
 	
 	//AI stuff
@@ -49,7 +49,7 @@ class Unit extends Collidable
 		type = "unit";
 		unitType = "default";
 		hp = hpMax;
-		attackSpeed = 60;
+		attackSpeed = 30;
 		cooldown = 0;
 		dmg = 0;		
 		source = null;
@@ -78,9 +78,8 @@ class Unit extends Collidable
 		}
 		if ( charge > 0 ) {
 			chargeAdd( -1);			
-		}
-		if ( animState != 1 ) {
-			if (( charge <= 0 )) {
+		} else {
+			if ( animState != 1 ) {
 				resetAnim();
 			}
 		}
@@ -267,9 +266,9 @@ class Unit extends Collidable
 	public function shoot(angle:Float) {			
 		if ( cooldown <= 0 ) {
 			chargeAdd(2);
-			if ( charge >= 8 ) {
+			if ( charge >= 10 ) {
 				setAnimTo(3);
-			} else if ( charge >= 4 ) {
+			} else if ( charge >= 5 ) {
 				setAnimTo(2);
 			} else {
 				setAnimTo(1);
@@ -306,7 +305,8 @@ class Unit extends Collidable
 					}
 				}
 			cooldown = attackSpeed;
-			charge = 0;
+			charge = 1;			
+			//setAnimTo(1);
 			}
 		}
 	}
@@ -347,7 +347,7 @@ class Unit extends Collidable
 		if ( dmg > 0 ) {
 			hp -= dmg;			
 			if ( this == Main.player ) {
-				//Main.drawHearts();
+				Main.trackPlayerHp();
 				//var soundfx1 = Assets.getSound("audio/player_hit.wav");
 				//soundfx1.play();
 			}
@@ -366,7 +366,7 @@ class Unit extends Collidable
 		if ( hp > hpMax ) {
 			hp = hpMax;
 		}
-		//Main.drawHearts();
+		Main.trackPlayerHp();
 	}
 	
 	public function kill() {
