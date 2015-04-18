@@ -49,6 +49,10 @@ class Collidable extends Sprite
 		return Math.sqrt(Math.pow(this.x - other.x, 2) + Math.pow(this.y - other.y, 2));
 	}
 	
+	public function distanceXBetween(other:Collidable) {
+		return Math.sqrt(Math.pow(this.x - other.x, 2) + Math.pow(this.y - other.y, 2)) - this.sizeX/2 - other.sizeX/2;
+	}
+	
 	private function distanceBetweenX(otherX:Float):Bool {
 		return (( x - sizeX / 2 < otherX ) && (x + sizeX / 2 > otherX));
 	}

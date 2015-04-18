@@ -44,6 +44,7 @@ class Main extends Sprite
 	public static var platfromSize:Int = 320;
 	
 	static var globalFilter:Sprite;
+	static var hpBar:Sprite;
 	
 	public static var mainInstance;
 	
@@ -81,13 +82,23 @@ class Main extends Sprite
 		back.mirror = 1;
 		back.x = fullStageWidth / 2;
 		back.y = fullStageHeight / 2;
-		addChildAt(new Bitmap(bmp), 0);
+		field.addChildAt(new Bitmap(bmp), 0);
 		
 		globalFilter = new Sprite();
 		resetGlobalFilter();
 		addChild(globalFilter);
 		
 		initPlatforms();
+		
+		
+		hpBar = new Sprite();
+		//hpBar.addChild(new Bitmap(Assets.getBitmapData("img/frame.png")));
+		hpBar.graphics.beginFill(0x00ff00);
+		hpBar.graphics.drawRect(0, 0, 100, 10);
+		hpBar.graphics.endFill();
+		hpBar.x = 50;
+		hpBar.y = 50;		
+		addChild(hpBar);
 		
 		//AI setup
 		aiSimpleFollow = new AI();
@@ -118,7 +129,7 @@ class Main extends Sprite
 		Player.init();
 		Player.dropWeapon();
 		addUnit(player, (1 + 0.5) * platfromSize);
-		
+		trackPlayerHp();
 		
 		spawnUnit("dog", (2 + 0.5) * platfromSize);
 		
@@ -141,7 +152,7 @@ class Main extends Sprite
 		addDefToSheet(sheet, "evildogLeg1", "img/doglegs1.png");
 		addDefToSheet(sheet, "evildogLeg2", "img/doglegs2.png");
 		addDefToSheet(sheet, "evildogLeg3", "img/doglegs3.png");
-		addDefToSheet(sheet, "evildoglight", "img/evildogbody3.png");
+		addDefToSheet(sheet, "evildoglight", "img/evildoglight.png");
 	}
 	
 	function addDefToSheet(sheet:TilesheetEx, name:String, bmp:String) {
@@ -194,7 +205,7 @@ class Main extends Sprite
 			newMonster.movespeed = 6;
 			newMonster.hpMax = 10;
 			newMonster.dmg = 5;
-			newMonster.attackSpeed = 10;
+			newMonster.attackSpeed = 20;
 			newMonster.ranged = false;
 			newMonster.ai = aiSimpleFollow;
 			newMonster.hp = newMonster.hpMax;
@@ -217,6 +228,11 @@ class Main extends Sprite
 		}*/
 		Main.addUnit(newMonster, x);
 	}
+	
+	public static function trackPlayerHp() {
+		hpBar.scaleX = (1 - player.hp / player.hpMax);
+	}
+	
 	/* SETUP */
 
 	public function new() 
@@ -267,7 +283,7 @@ class Main extends Sprite
 			player.moveDir( -1);
 		}		
 		if ( playerShootOrder ) {
-			player.shoot(0);
+			player.shoot(player.lastDirection>0?0:Math.PI);
 		}
 		for ( enemy in enemies ) {
 			enemy.ai.tick(enemy);
@@ -357,6 +373,7 @@ class Main extends Sprite
 		}
 		if ( e.keyCode == 75 ) {
 			//K
+			Player.attemptGrab();
 		}
 	}
 	
