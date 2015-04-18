@@ -30,13 +30,22 @@ class Player
 	}
 	
 	public static function swapWeapon(next:String) {
-		
+		trace("dog!");
+	}
+	
+	public static function attemptGrab() {		
+		if ( highlightType == "unit" ) {
+			if ( highlightedUnit.unitType == "dog" ) {
+				highlightedUnit.kill();
+				swapWeapon("dog");
+			}
+		}
 	}
 	
 	public static function updateGrabHighlight() {
 		for ( enemy in Main.enemies ) {
 			if ( enemy.unitType == "dog" ) {
-				if ( player.distanceTo(enemy) < grabRange ) {
+				if ( player.distanceXBetween(enemy) < grabRange ) {
 					if(!sameHighlight(enemy))	highlightRemove();
 					highlightUnit(enemy);
 					return;
@@ -49,8 +58,10 @@ class Player
 	public static function highlightPosUpdate() {
 		if ( highlightType == "unit" ) {
 			if ( highlightedUnit.unitType == "dog" ) {
-				highlightSpriteDog.x = highlightedUnit.x;
-				highlightSpriteDog.y = highlightedUnit.y;
+				highlightSpriteDog.x = highlightedUnit.currentSprite.x;
+				highlightSpriteDog.y = highlightedUnit.currentSprite.y;
+				highlightSpriteDog.mirror = highlightedUnit.currentSprite.mirror;
+				highlightSpriteDog.alpha = (1 - player.distanceXBetween(highlightedUnit) / grabRange);
 			}
 		}
 	}
@@ -58,20 +69,18 @@ class Player
 	private static function highlightRemove() {
 		if ( highlightType == "unit" ) {
 			if ( highlightedUnit.unitType == "dog" ) {
-				Main.layer.removeChild(highlightSpriteDog);
+				highlightSpriteDog.visible = false;
 			}
 			highlightType = "none";
-			highlightedUnit = null;			
+			highlightedUnit = null;
 		}
 	}
 	
 	private static function highlightUnit(unit:Unit) {
-		if (sameHighlight(unit)) {
+		if (!sameHighlight(unit)) {
 			highlightType = "unit";
 			highlightedUnit = unit;
-			if ( unit.unitType == "dog" ) {
-				Main.layer.addChild(highlightSpriteDog);
-			}
+			highlightSpriteDog.visible = true;
 		}
 		highlightPosUpdate();
 	}
@@ -87,6 +96,8 @@ class Player
 		bodySpriteBasic3 = new TileSprite(Main.layer, "dog3");
 		
 		highlightSpriteDog = new TileSprite(Main.layer, "evildoglight");
+		highlightSpriteDog.visible = false;
+		Main.layer.addChildAt(highlightSpriteDog, 0);
 	}
 	
 }
