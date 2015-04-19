@@ -48,6 +48,11 @@ class Main extends Sprite
 	static var globalFilter:Sprite;
 	static var hpBar:Sprite;
 
+	static var mainBg:Bitmap;
+	static var pausePopup:Bitmap;
+	static var losePopup:Bitmap;
+	static var winPopup:Bitmap;
+
 	public static var parallaxLayers = new Array<ParallaxLayer>();
 	public static var movedLayers = new Array<MovedLayer>();
 	
@@ -60,6 +65,11 @@ class Main extends Sprite
 		if (!inited) init();
 		// else (resize or orientation change)
 	}
+
+	function getBitmap(image):Bitmap {
+		var bmp = Assets.getBitmapData(image);
+		return new Bitmap(bmp);
+	}
 	
 	function init() 
 	{
@@ -71,10 +81,21 @@ class Main extends Sprite
 		fieldHeightTotal = fullStageHeight;
 		fieldWidthTotal = platfromSize * stageLength;
 		
-		var bmp = Assets.getBitmapData("img/bg0.png");		
-		addChild(new Bitmap(bmp));
+		var bmp = Assets.getBitmapData("img/bg0.png");
+		var mainBg = new Bitmap(bmp);
+		addChild(mainBg);
 		var sheet:TilesheetEx = new TilesheetEx(bmp);			
 		var r:Rectangle = cast bmp.rect.clone();
+		
+		pausePopup = getBitmap("img/textstart-pause.png");
+		pausePopup.x -= 220;
+		pausePopup.y -= 280;
+		winPopup = getBitmap("img/textwon.png");
+		winPopup.x -= 220;
+		winPopup.y -= 280;
+		losePopup = getBitmap("img/textlose.png");
+		losePopup.x -= 220;
+		losePopup.y -= 280;
 
 		movedLayers.push(new MovedLayer("img/bgclouds.png", -1));
 		for ( i in 0...movedLayers.length ) {
@@ -175,11 +196,13 @@ class Main extends Sprite
 		addEventListener(Event.ENTER_FRAME, onFrame);		
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, onDown);
 		stage.addEventListener(KeyboardEvent.KEY_UP, onUp);
+
+		togglePause();
 		
 	}
 
 	function initSheet(sheet:TilesheetEx) {
-		//addDefToSheet(sheet, "back", "img/bg0.png");
+		addDefToSheet(sheet, "redhand", "img/herograbhand1.png");
         addDefToSheet(sheet, "herobasic1", "img/herobody1.png");
         addDefToSheet(sheet, "herobasic2", "img/herobody2.png");
         addDefToSheet(sheet, "herobasic3", "img/herobody3.png");
@@ -302,11 +325,11 @@ class Main extends Sprite
 	}
     private function spawnRandomMob(x:Float) {
         var rval:Float = Math.random();        
-        if ( rval < 0.4 )   return;
-        else if (rval < 0.8) {            
+        if ( rval < 0.3 )   return;
+        else if (rval < 0.85) {            
 		    spawnUnit("dog", x + 0.8 * platfromSize);
         }
-        else if (rval < 0.95) {            
+        else if (rval < 0.97) {            
 		    spawnUnit("gun", x + 0.8 * platfromSize);
         }
         else if (rval < 1.0) {            
@@ -315,13 +338,15 @@ class Main extends Sprite
         rval = Math.random();
         if ( rval < 0.3 ) {
             rval = Math.random();
-            if ( rval < 0.8 ) {
+            if ( rval < 0.85 ) {
                 spawnUnit("dogAlly", x + 0.3 * platfromSize);
-            } else if ( rval < 0.95 ) {
+            } else if ( rval < 0.97 ) {
                 spawnUnit("gunAlly", x + 0.3 * platfromSize);
             } else {
                 spawnUnit("handmanAlly", x + 0.3 * platfromSize);
             }
+        } else {
+            if ( Math.random() < 0.3 )  spawnUnit("dog", x + 0.3 * platfromSize);
         }
     }
 	
@@ -441,7 +466,7 @@ class Main extends Sprite
 		heal = true;
 		healTime = 60 * 1;
 		globalFilter.graphics.clear();
-		globalFilter.graphics.beginFill(0x00ff00, 1.0);
+		globalFilter.graphics.beginFill(0x3a347b, 1.0);
 		globalFilter.graphics.drawRect(0, 0, fullStageWidth, fullStageHeight);
 		globalFilter.graphics.endFill();
 		globalFilter.alpha = 0.1;
@@ -486,7 +511,17 @@ class Main extends Sprite
 			if ( keymap.get(39) || keymap.get(68) ) continueGame(); 
 			if ( keymap.get(40) || keymap.get(83) ) continueGame(); 		
 		}*/
-		if ( pause )	return;		
+		var playerDead = player.hp <= 0;
+		if (playerDead) {
+			togglePause(true);
+		}
+
+		if (pause) {
+			if (playerDead) {
+				addChild(losePopup);
+			}
+			return;
+		}
 		++framesPassed;
 		
 		var dx:Int = 0;
@@ -606,6 +641,10 @@ class Main extends Sprite
 		if ( e.keyCode == 69 ) {
 			//E
 		}
+		if ( e.keyCode == 80 ) {
+			//P
+			togglePause();
+		}
 		if ( e.keyCode == 84 ) {
 			//T
 			
@@ -617,6 +656,19 @@ class Main extends Sprite
 		if ( e.keyCode == 75 ) {
 			//K
 			Player.attemptGrab();
+		}
+	}
+
+	function togglePause(value:Bool = null):Void {
+		if (value != null) {
+			pause = value;
+		} else {
+			pause = !pause;
+		}
+		if (pause) {
+			addChild(pausePopup);
+		} else {
+			removeChild(pausePopup);			
 		}
 	}
 	
