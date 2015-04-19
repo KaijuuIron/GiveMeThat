@@ -22,6 +22,7 @@ class Main extends Sprite
 	var inited:Bool;
 	public static var framesPassed:Int = 0;
 	static var pause:Bool = false;
+	static var gameEnded:Bool = false;
 	
 	public static var aiSimpleFollow:AI;
 	public static var aiSimpleRanged:AI;
@@ -512,13 +513,17 @@ class Main extends Sprite
 			if ( keymap.get(40) || keymap.get(83) ) continueGame(); 		
 		}*/
 		var playerDead = player.hp <= 0;
-		if (playerDead) {
+		var playerWon = player.x >= fieldWidthTotal - platfromSize / 2 - 20;
+		if (playerDead || playerWon) {
 			setPause(true);
+			gameEnded = true;
 		}
 
 		if (pause) {
 			if (playerDead) {
 				addChild(losePopup);
+			} else if(playerWon) {
+				addChild(winPopup);
 			}
 			return;
 		}
@@ -643,7 +648,7 @@ class Main extends Sprite
 		}
 		if ( e.keyCode == 80 ) {
 			//P
-            if ( Main.player.hp > 0 ) {
+            if (!gameEnded) {
 			    togglePause();
             }
 		}
