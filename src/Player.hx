@@ -14,6 +14,7 @@ class Player
 	public static var highlightedUnit:Unit;
 	private static var highlightSpriteDog:TileSprite;
 	private static var highlightSpriteGun:TileSprite;
+	private static var highlightSpriteHandman:TileSprite;
 	private static var highlightUnitToSprite:Map<String,TileSprite> = new Map<String,TileSprite>();
 	
 	private static var bodySpriteBasic1:TileSprite;
@@ -48,7 +49,7 @@ class Player
 	
 	public static function updateGrabHighlight() {
 		for ( enemy in Main.enemies ) {
-			if (( enemy.unitType == "dog" ) || (enemy.unitType == "gun"))  {
+			if (( enemy.unitType == "dog" ) || (enemy.unitType == "gun") || (enemy.unitType == "handman"))  {
 				if ( player.distanceXBetween(enemy) < grabRange ) {
 					if(!sameHighlight(enemy))	highlightRemove();
 					highlightUnit(enemy);
@@ -66,7 +67,7 @@ class Player
 	
 	public static function highlightPosUpdate() {
 		if ( highlightType == "unit" ) {
-			if (( highlightedUnit.unitType == "dog" ) || (highlightedUnit.unitType == "gun")) {
+			if (( highlightedUnit.unitType == "dog" ) || (highlightedUnit.unitType == "gun") || (highlightedUnit.unitType == "handman")) {
 				highlightUnitToSprite.get(highlightedUnit.unitType).x = highlightedUnit.currentSprite.x;
 				highlightUnitToSprite.get(highlightedUnit.unitType).y = highlightedUnit.currentSprite.y;
 				highlightUnitToSprite.get(highlightedUnit.unitType).mirror = highlightedUnit.currentSprite.mirror;
@@ -113,7 +114,11 @@ class Player
 		highlightSpriteGun = new TileSprite(Main.layer, "evilgunlight");
 		highlightSpriteGun.visible = false;
 		Main.layer.addChildAt(highlightSpriteGun, 0);
-		highlightUnitToSprite.set("gun", highlightSpriteGun);
+		highlightUnitToSprite.set("gun", highlightSpriteGun);		
+		highlightSpriteHandman = new TileSprite(Main.layer, "evilhandmanlight");
+		highlightSpriteHandman.visible = false;
+		Main.layer.addChildAt(highlightSpriteHandman, 0);
+		highlightUnitToSprite.set("handman", highlightSpriteHandman);
 	}
 	
 }

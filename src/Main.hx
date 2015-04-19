@@ -138,6 +138,7 @@ class Main extends Sprite
 		addUnit(player, (0 + 0.5) * platfromSize);
 		trackPlayerHp();
 		
+		spawnUnit("handman", (2 + 0.5) * platfromSize);
 		spawnUnit("dog", (4 + 0.3) * platfromSize);
 		spawnUnit("gun", (3 + 0.5) * platfromSize);
 		spawnUnit("dogAlly", (4 + 0.8) * platfromSize);
@@ -164,6 +165,8 @@ class Main extends Sprite
 		addDefToSheet(sheet, "evildogLeg3", "img/doglegs3.png");
 		addDefToSheet(sheet, "evildoglight", "img/evildoglight.png");
 		addDefToSheet(sheet, "gun1", "img/gunbody1.png");
+		addDefToSheet(sheet, "gun2", "img/evilgunbody2.png");
+		addDefToSheet(sheet, "gun3", "img/evilgunbody3.png");
 		addDefToSheet(sheet, "evilgun1", "img/evilgunbody1.png");
 		addDefToSheet(sheet, "evilgun2", "img/evilgunbody2.png");
 		addDefToSheet(sheet, "evilgun3", "img/evilgunbody3.png");
@@ -171,6 +174,17 @@ class Main extends Sprite
 		addDefToSheet(sheet, "gunLeg2", "img/gunlegs2.png");
 		addDefToSheet(sheet, "gunLeg3", "img/gunlegs3.png");
 		addDefToSheet(sheet, "evilgunlight", "img/evilgunlight.png");
+		
+		addDefToSheet(sheet, "handman1", "img/handmanlbody1.png");
+		addDefToSheet(sheet, "handman2", "img/evilhandmanlbody2.png");
+		addDefToSheet(sheet, "handman3", "img/evilhandmanlbody3.png");
+		addDefToSheet(sheet, "evilhandman1", "img/evilhandmanlbody1.png");
+		addDefToSheet(sheet, "evilhandman2", "img/evilhandmanlbody2.png");
+		addDefToSheet(sheet, "evilhandman3", "img/evilhandmanlbody3.png");
+		addDefToSheet(sheet, "handmanLeg1", "img/handmanlegs1.png");
+		addDefToSheet(sheet, "handmanLeg2", "img/handmanlegs2.png");
+		addDefToSheet(sheet, "handmanLeg3", "img/handmanlegs3.png");
+		addDefToSheet(sheet, "evilhandmanlight", "img/evilhandmanlight.png");
 	}
 	
 	function addDefToSheet(sheet:TilesheetEx, name:String, bmp:String) {
@@ -181,9 +195,14 @@ class Main extends Sprite
 	
 	static var platformsMap:Array<Int>;
 	static function initPlatforms() {
-		platformsMap = generateMap(stageLength);//[50, 100, 200, 50, 150, 150, 150, 100, 200, 300, 50, 50, 50];
-		for ( i in 0...platformsMap.length ) {
-			var bmp = new Bitmap(Assets.getBitmapData("img/tile1.png"));
+		platformsMap = generateMap(stageLength);
+		for ( i in 0...platformsMap.length ) {			
+			var bmp;
+			if ( platformsMap[i] < 95 ) {
+				bmp = new Bitmap(Assets.getBitmapData("img/tile1.png"));
+			} else {
+				bmp = new Bitmap(Assets.getBitmapData("img/tiletall.png"));
+			}
 			bmp.y = fullStageHeight - platfromHeightAt(i * platfromSize);
 			bmp.x = i * platfromSize;
 			field.addChildAt(bmp, 1);
@@ -201,7 +220,7 @@ class Main extends Sprite
 		map.push(curPlatform);
 
 		while (i <= length) {
-			random = Random.int(15, Math.floor(fullStageHeight / 2));
+			random = 15 + Math.round(Math.random() * (fullStageHeight/2- 15));
 			diff = random - map[map.length-1];
 			if (diff > maxDiff) {
 				curPlatform = map[map.length-1] + maxDiff;
@@ -210,7 +229,6 @@ class Main extends Sprite
 			} else {
 				curPlatform = random;
 			}
-
 			map.push(curPlatform);
 			i++;
 		}
@@ -241,11 +259,19 @@ class Main extends Sprite
 		}
 	}
 	
+	private static function truncName(name:String):String {
+		if ( name.substr(name.length - 4) == "Ally" ) {	
+			return name.substr(0, name.length - 4);
+		} else {
+			return name;
+		}
+	}
+	
 	public function spawnUnit(monsterType:String,x:Float) {
 		
 		var newMonster = new Unit();				
 		newMonster.unitType = monsterType;
-		if (newMonster.unitType.substr(0, newMonster.unitType.length - 4) == "dog" ) {
+		if (truncName(newMonster.unitType) == "dog" ) {
 			newMonster.sizeX = 80;
 			newMonster.sizeY = 80;
 			newMonster.movespeed = 6;
@@ -253,11 +279,8 @@ class Main extends Sprite
 			newMonster.dmg = 5;
 			newMonster.attackSpeed = 20;
 			newMonster.ranged = false;
-		}		
-		if ( newMonster.unitType == "dog" ) {
-			newMonster.infect();
 		}
-		if ( newMonster.unitType == "gun" ) {
+		if ( truncName(newMonster.unitType) == "gun" ) {	
 			newMonster.sizeX = 100;
 			newMonster.sizeY = 160;
 			newMonster.movespeed = 5;
@@ -265,15 +288,15 @@ class Main extends Sprite
 			newMonster.dmg = 10;
 			newMonster.attackSpeed = 30;
 			newMonster.ranged = true;
-			newMonster.infected = true;
-			newMonster.ai = aiSimpleRanged;
-			
-			newMonster.spriteBody1 = new TileSprite(layer, "evilgun1");
-			newMonster.spriteBody2 = new TileSprite(layer, "evilgun2");
-			newMonster.spriteBody3 = new TileSprite(layer, "evilgun3");
-			newMonster.spriteLegs1 = new TileSprite(layer, "gunLeg1");
-			newMonster.spriteLegs2 = new TileSprite(layer, "gunLeg2");
-			newMonster.spriteLegsJump = new TileSprite(layer, "gunLeg3");
+		}		
+		if (truncName(newMonster.unitType) == "handman" ) {
+			newMonster.sizeX = 200;
+			newMonster.sizeY = 140;
+			newMonster.movespeed = 4;
+			newMonster.hpMax = 50;
+			newMonster.dmg = 10;
+			newMonster.attackSpeed = 40;
+			newMonster.ranged = false;
 		}
 		if ( newMonster.unitType == "dogAlly" ) {
 			newMonster.infected = false;
@@ -285,6 +308,32 @@ class Main extends Sprite
 			newMonster.spriteLegs1 = new TileSprite(layer, "dogLeg1");
 			newMonster.spriteLegs2 = new TileSprite(layer, "dogLeg2");
 			newMonster.spriteLegsJump = new TileSprite(layer, "dogLeg3");
+		}
+		if ( newMonster.unitType == "gunAlly" ) {
+			newMonster.infected = false;
+			newMonster.ai = aiAlly;
+			
+			newMonster.spriteBody1 = new TileSprite(layer, "gun1");
+			newMonster.spriteBody2 = new TileSprite(layer, "gun2");
+			newMonster.spriteBody3 = new TileSprite(layer, "gun3");
+			newMonster.spriteLegs1 = new TileSprite(layer, "gunLeg1");
+			newMonster.spriteLegs2 = new TileSprite(layer, "gunLeg2");
+			newMonster.spriteLegsJump = new TileSprite(layer, "gunLeg3");
+		}
+		
+		if ( newMonster.unitType == "handmanAlly" ) {
+			newMonster.infected = false;
+			newMonster.ai = aiAlly;
+			
+			newMonster.spriteBody1 = new TileSprite(layer, "handman1");
+			newMonster.spriteBody2 = new TileSprite(layer, "handman2");
+			newMonster.spriteBody3 = new TileSprite(layer, "handman3");
+			newMonster.spriteLegs1 = new TileSprite(layer, "handmanLeg1");
+			newMonster.spriteLegs2 = new TileSprite(layer, "handmanLeg2");
+			newMonster.spriteLegsJump = new TileSprite(layer, "handmanLeg3");
+		}
+		if ( newMonster.unitType.substr(newMonster.unitType.length - 4) != "Ally" ) {	
+			newMonster.infect();
 		}
 		newMonster.hp = newMonster.hpMax;
 		Main.addUnit(newMonster, x);
