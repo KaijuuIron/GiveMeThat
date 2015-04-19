@@ -179,7 +179,7 @@ class Main extends Sprite
 	}
 
 	function initSheet(sheet:TilesheetEx) {
-		//addDefToSheet(sheet, "back", "img/bg0.png");
+		addDefToSheet(sheet, "redhand", "img/herograbhand1.png");
         addDefToSheet(sheet, "herobasic1", "img/herobody1.png");
         addDefToSheet(sheet, "herobasic2", "img/herobody2.png");
         addDefToSheet(sheet, "herobasic3", "img/herobody3.png");
@@ -302,11 +302,11 @@ class Main extends Sprite
 	}
     private function spawnRandomMob(x:Float) {
         var rval:Float = Math.random();        
-        if ( rval < 0.4 )   return;
-        else if (rval < 0.8) {            
+        if ( rval < 0.3 )   return;
+        else if (rval < 0.85) {            
 		    spawnUnit("dog", x + 0.8 * platfromSize);
         }
-        else if (rval < 0.95) {            
+        else if (rval < 0.97) {            
 		    spawnUnit("gun", x + 0.8 * platfromSize);
         }
         else if (rval < 1.0) {            
@@ -315,13 +315,15 @@ class Main extends Sprite
         rval = Math.random();
         if ( rval < 0.3 ) {
             rval = Math.random();
-            if ( rval < 0.8 ) {
+            if ( rval < 0.85 ) {
                 spawnUnit("dogAlly", x + 0.3 * platfromSize);
-            } else if ( rval < 0.95 ) {
+            } else if ( rval < 0.97 ) {
                 spawnUnit("gunAlly", x + 0.3 * platfromSize);
             } else {
                 spawnUnit("handmanAlly", x + 0.3 * platfromSize);
             }
+        } else {
+            if ( Math.random() < 0.3 )  spawnUnit("dog", x + 0.3 * platfromSize);
         }
     }
 	
@@ -441,7 +443,7 @@ class Main extends Sprite
 		heal = true;
 		healTime = 60 * 1;
 		globalFilter.graphics.clear();
-		globalFilter.graphics.beginFill(0x00ff00, 1.0);
+		globalFilter.graphics.beginFill(0x3a347b, 1.0);
 		globalFilter.graphics.drawRect(0, 0, fullStageWidth, fullStageHeight);
 		globalFilter.graphics.endFill();
 		globalFilter.alpha = 0.1;

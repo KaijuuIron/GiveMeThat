@@ -197,7 +197,7 @@ class Unit extends Collidable
             newMirror == 0 ? newMirror = 1 : newMirror = 0;
         }
 		if ( lastMirrorState == newMirror )	return;
-		if ( timePassedFrom(lastMirrorChange) < 30 )	return;
+		if (( this != Main.player ) && ( timePassedFrom(lastMirrorChange) < 30 ))	return;
 		lastMirrorState = newMirror;
 		lastMirrorChange = Main.framesPassed;
 		if ( spriteBody1 != null ) spriteBody1.mirror = newMirror;

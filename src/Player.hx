@@ -103,9 +103,9 @@ class Player
     
     public static function redHandTick() {
         if ( redHandSprite.visible = true ) {
-            redHandSprite.x = player.x;
-            redHandSprite.y = player.y;
-            redHandSprite.mirror = player.currentSprite.mirror;
+            redHandSprite.x = player.x + 60 * player.lastDirection;
+            redHandSprite.y = player.y - 30;
+            redHandSprite.mirror = player.lastDirection <= 0 ? 1 : 0;
             --redHandTime;
             redHandSprite.alpha = 0.5 + (0.5 * redHandTime / 30);
             if ( redHandTime <= 0 ) {

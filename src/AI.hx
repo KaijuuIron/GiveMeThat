@@ -104,7 +104,7 @@ class AI
 				}
 			}
 		}
-		if ( dist < sightDist ) {
+		if ( dist < sightDist * 0.75 ) {
 			return target;
 		}
 		return null;
