@@ -41,7 +41,17 @@ class InfinitySprite extends Sprite {
     }
 
     public function setY(newPos:Float = 0) {
-        //TODO: add all'
+        //TODO: add all
+    }
+
+    public function moveX(speed:Int) {
+        var curPos = sprites[0].x;
+        var newPos = curPos + speed;
+        this.setX(newPos);
+    }
+
+    public function moveY(speed:Int) {
+        //TODO: add all
     }
 
 }
