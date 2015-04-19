@@ -510,13 +510,16 @@ class Main extends Sprite
 			if ( keymap.get(40) || keymap.get(83) ) continueGame(); 		
 		}*/
 		var playerDead = player.hp <= 0;
-		if (playerDead) {
+		var playerWon = player.x >= fieldWidthTotal - platfromSize / 2 - 20;
+		if (playerDead || playerWon) {
 			togglePause(true);
 		}
 
 		if (pause) {
 			if (playerDead) {
 				addChild(losePopup);
+			} else if(playerWon) {
+				addChild(winPopup);
 			}
 			return;
 		}
