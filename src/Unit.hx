@@ -41,7 +41,9 @@ class Unit extends Collidable
 	public var ai:AI;
 	public var lastDamagedTime:Int = 0;
 	public var lastJumpTime:Int = 0;
+	public var lastMirrorChange:Int = 0;
 	public var playerDetected:Bool = false;
+	public var lastMirrorState:Int = 0;
 	
 	public function new() 
 	{
@@ -67,8 +69,14 @@ class Unit extends Collidable
 		spriteBody3 = null;
 	}
 	
+	public static function timePassedFrom(time:Int):Int {
+		return Main.framesPassed - time;
+	}
+	
 	public function moveDir(dir:Int) {
-		dx = movespeed * ((dir > 0) ? 1 : -1);
+		if(!isFlying() || (timePassedFrom(lastJumpTime) < 30 )) {
+			dx = movespeed * ((dir > 0) ? 1 : -1);
+		}
 		//dy = movespeed * Math.sin(angle);
 	}
 	
@@ -91,7 +99,7 @@ class Unit extends Collidable
 			dx = 0.9 * dx;
 		} else {
 			if ( ai != null) {
-				if (( dx != 0 ) && ( Main.framesPassed - lastJumpTime > 60)) {
+				if (( dx != 0 ) && ( timePassedFrom(lastJumpTime) > 60)) {
 					jump();
 				}
 			}
@@ -152,33 +160,41 @@ class Unit extends Collidable
 		if ( currentSprite != null ) {
 			currentSprite.x = this.x;// + currentSprite.width / 2;
 			currentSprite.y = this.y - currentSprite.height / 2 + this.sizeY / 2;
-			if ( lastDirection < 0 ) {
-				currentSprite.mirror = 0;
-			} else if ( lastDirection > 0 ) {
-				currentSprite.mirror = 1;
-			}
-			if ( Main.framesPassed - lastDamagedTime < 1 ) {
+			if ( timePassedFrom(lastDamagedTime) < 1 ) {
 				currentSprite.x += 2;
 			}
-			else if ( Main.framesPassed - lastDamagedTime < 2 ) {
+			else if ( timePassedFrom(lastDamagedTime) < 2 ) {
 				currentSprite.x += 1;
 			}
 		}
 		if ( currentSpriteLegs != null ) {
 			currentSpriteLegs.x = this.x;// + currentSprite.width / 2;
 			currentSpriteLegs.y = this.y - currentSpriteLegs.height / 2 + this.sizeY / 2;
-			if ( lastDirection < 0 ) {
-				currentSpriteLegs.mirror = 0;
-			} else if ( lastDirection > 0 ) {
-				currentSpriteLegs.mirror = 1;
-			}
-			if ( Main.framesPassed - lastDamagedTime < 1 ) {
+			if (timePassedFrom(lastDamagedTime) < 1 ) {
 				currentSpriteLegs.y += 2;
 			}
-			else if ( Main.framesPassed - lastDamagedTime < 2 ) {
+			else if ( timePassedFrom(lastDamagedTime) < 2 ) {
 				currentSpriteLegs.y += 1;
 			}
-		}		
+		}	
+		if ( lastDirection <= 0 ) {
+			mirrorTo(0);
+		} else {
+			mirrorTo(1);
+		}
+	}
+	
+	private function mirrorTo(newMirror:Int) {
+		if ( lastMirrorState == newMirror )	return;
+		if ( timePassedFrom(lastMirrorChange) < 30 )	return;
+		lastMirrorState = newMirror;
+		lastMirrorChange = Main.framesPassed;
+		if ( spriteBody1 != null ) spriteBody1.mirror = newMirror;
+		if ( spriteBody2 != null ) spriteBody2.mirror = newMirror;
+		if ( spriteBody3 != null ) spriteBody3.mirror = newMirror;
+		if ( spriteLegs1 != null ) spriteLegs1.mirror = newMirror;
+		if ( spriteLegs2 != null ) spriteLegs2.mirror = newMirror;
+		if ( spriteLegsJump != null ) spriteLegsJump.mirror = newMirror;
 	}
 	
 	public function draw() {
@@ -250,7 +266,7 @@ class Unit extends Collidable
 	}
 	
 	public function canMoveToY(y:Float):Bool {
-		if ( y - sizeY/2 < 0 ) return false;
+		//if ( y - sizeY/2 < 0 ) return false;
 		if ( y + sizeY/2 > Main.fullStageHeight - Main.platfromHeightAt(this.x) )	return false;
 		//if ( y + sizeY/2 > Main.fullStageHeight - Main.platfromHeightAt(this.x+this.sizeX/2) )	return false;
 		//if ( y + sizeY/2 > Main.fullStageHeight - Main.platfromHeightAt(this.x-this.sizeX/2) )	return false;
@@ -446,7 +462,7 @@ class Unit extends Collidable
 			spriteLegs1 = new TileSprite(Main.layer, "handmanLeg1");
 			spriteLegs2 = new TileSprite(Main.layer, "handmanLeg2");
 			spriteLegsJump = new TileSprite(Main.layer, "handmanLeg3");
-			ai = Main.aiSimpleRanged;
+			ai = Main.aiSimpleFollow;
 		}
 		infected = true;
 		//positionSprites();
