@@ -13,7 +13,7 @@ import openfl.Assets;
 
 /**
  * ...
- * @author Al
+ * @author Al, LonelyFlame
  */
 
 class Main extends Sprite 
