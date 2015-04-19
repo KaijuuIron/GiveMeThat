@@ -73,13 +73,14 @@ class AI
 				} 
 			}
 		}
+        if (Main.framesPassed % 30 == 0) allyHeal(unit);        
 	}
     
     public function allyHeal(unit:Unit) {
         if ( !unit.infected ) {
             if ( unit.x < Main.player.x - Main.fullStageWidth * 1.5 ) {
                 unit.removeFromGame();
-                trace("heal");
+                Main.healOn();
                 Main.player.heal(25);
             }
         }

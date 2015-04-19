@@ -426,7 +426,7 @@ class Unit extends Collidable
 						another.takeDamage(0);
 					}
                     hitFlag = true;
-					trace(this.dmg);
+					//trace(this.dmg);
 				}
 			}
 		}

@@ -384,6 +384,24 @@ class Main extends Sprite
 		projGun.bmp = "img/gunbullet.png";
 	}
 	
+    
+	public static var heal:Bool = false;
+	public static var healTime:Int = 0;
+	public static function healOn() {
+		heal = true;
+		healTime = 60 * 1;
+		globalFilter.graphics.clear();
+		globalFilter.graphics.beginFill(0x00ff00, 1.0);
+		globalFilter.graphics.drawRect(0, 0, fullStageWidth, fullStageHeight);
+		globalFilter.graphics.endFill();
+		globalFilter.alpha = 0.1;
+	}
+	
+	public static function healOff() {
+		heal = false;
+		resetGlobalFilter();
+	}
+    
 	/* SETUP */
 
 	public function new() 
@@ -473,6 +491,16 @@ class Main extends Sprite
 			corpse.decay();
 		}
 		
+		if ( healTime > 0 ) {
+			--healTime;
+			globalFilter.alpha = 0.0015 * (10 + healTime % 60);
+			//if ( healTime % 60 == 0 ) {
+				//player.heal(1);
+			//}
+			if ( healTime <= 0 ) {
+				healOff();
+			}
+		}
 		for ( p in particles ) {
 			p.tick();
 		}
