@@ -44,7 +44,7 @@ class Main extends Sprite
 	public static var particles:List<ExpandingParticle> = new List<ExpandingParticle>();
 	
 	public static var platfromSize:Int = 320;
-	public static var stageLength:Int = 50;
+	public static var stageLength:Int = 35;
 	
 	static var globalFilter:Sprite;
 	static var hpBar:Sprite;
