@@ -70,10 +70,20 @@ class AI
 			if ( Main.framesPassed - unit.lastDamagedTime > 120 ) {
 				if (unit.x > unit.sizeX / 2 + 16 ) {
 					unit.moveDir( -1);
-				}
+				} 
 			}
 		}
 	}
+    
+    public function allyHeal(unit:Unit) {
+        if ( !unit.infected ) {
+            if ( unit.x < Main.player.x - Main.fullStageWidth * 1.5 ) {
+                unit.removeFromGame();
+                trace("heal");
+                Main.player.heal(25);
+            }
+        }
+    }
 	
 	public function checkBoredom(unit:Unit) {
 		unit.bored = ( Math.abs(unit.x - unit.prevPosX) < 100 );

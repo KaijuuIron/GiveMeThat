@@ -132,10 +132,11 @@ class Main extends Sprite
 		player.infected = false;
 		player.spriteLegs1 = new TileSprite(layer, "heroleg1");
 		player.spriteLegs2 = new TileSprite(layer, "heroleg2");
-		player.spriteLegsJump = new TileSprite(layer, "heroleg3");
-		Player.init();
+		player.spriteLegsJump = new TileSprite(layer, "heroleg3");				
+        Player.init();
 		Player.dropWeapon();
-		addUnit(player, (0 + 0.5) * platfromSize);
+        addUnit(player, (0 + 0.5) * platfromSize);
+        Player.initWeapons();
 		trackPlayerHp();
 		
 		spawnUnit("handman", (2 + 0.5) * platfromSize);
@@ -154,6 +155,9 @@ class Main extends Sprite
         addDefToSheet(sheet, "herobasic1", "img/herobody1.png");
         addDefToSheet(sheet, "herobasic2", "img/herobody2.png");
         addDefToSheet(sheet, "herobasic3", "img/herobody3.png");
+        addDefToSheet(sheet, "herodog1", "img/herobodydog1.png");
+        addDefToSheet(sheet, "herodog2", "img/herobodydog2.png");
+        addDefToSheet(sheet, "herodog3", "img/herobodydog3.png");
         addDefToSheet(sheet, "heroleg1", "img/herolegs1.png");
         addDefToSheet(sheet, "heroleg2", "img/herolegs2.png");
         addDefToSheet(sheet, "heroleg3", "img/herolegs3.png");
@@ -271,7 +275,7 @@ class Main extends Sprite
 		}
 	}
 	
-	private static function truncName(name:String):String {
+	public static function truncName(name:String):String {
 		if ( name.substr(name.length - 4) == "Ally" ) {	
 			return name.substr(0, name.length - 4);
 		} else {
@@ -298,7 +302,7 @@ class Main extends Sprite
 			newMonster.movespeed = 5;
 			newMonster.hpMax = 20;
 			newMonster.dmg = 10;
-			newMonster.attackSpeed = 30;
+			newMonster.attackSpeed = 60;
 			newMonster.ranged = true;
 		}		
 		if (truncName(newMonster.unitType) == "handman" ) {

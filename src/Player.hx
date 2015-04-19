@@ -1,5 +1,6 @@
 package ;
 import aze.display.TileSprite;
+import flash.display.Sprite;
 /**
  * ...
  * @author Al
@@ -9,6 +10,11 @@ class Player
 	private static var player:Unit;
 	
 	public static var grabRange:Float = 100;
+    private static var attackCharges:Int = 0;
+    public static var playerWeapon:String = "fists";
+    public static var strikeAreaX:Float;
+    public static var strikeAreaY:Float;
+    
 	
 	public static var highlightType:String = "none";
 	public static var highlightedUnit:Unit;
@@ -20,27 +26,55 @@ class Player
 	private static var bodySpriteBasic1:TileSprite;
 	private static var bodySpriteBasic2:TileSprite;
 	private static var bodySpriteBasic3:TileSprite;
+    private static var bodySpriteDog1:TileSprite;
+	private static var bodySpriteDog2:TileSprite;
+	private static var bodySpriteDog3:TileSprite;
 	
 	public static function dropWeapon() {
-		player.dmg = Main.playerBaseDmg;
-		player.ranged = false;
-		player.spriteBody1 = bodySpriteBasic1;
-		player.spriteBody2 = bodySpriteBasic2;
-		player.spriteBody3 = bodySpriteBasic3;
-		var animState:Int = player.animState;
-		player.animState = 0;
-		player.setAnimTo(animState);
+        swapWeapon("fists");
 	}
 	
 	public static function swapWeapon(next:String) {
-		trace(next+"!");
+        if ( next == "fists" ) {            
+            player.dmg = Main.playerBaseDmg;
+            player.ranged = false;
+            player.spriteBody1 = bodySpriteBasic1;
+            player.spriteBody2 = bodySpriteBasic2;
+            player.spriteBody3 = bodySpriteBasic3;
+            strikeAreaX = 100;
+            strikeAreaY = 200;
+        }
+		if ( next == "dog" ) {
+            attackCharges = 2;
+            player.dmg = 20;
+            player.ranged = false;
+            strikeAreaX = 100;
+            strikeAreaY = 200;
+            player.spriteBody1 = bodySpriteDog1;
+            player.spriteBody2 = bodySpriteDog2;
+            player.spriteBody3 = bodySpriteDog3;
+        }        
+        var animState:Int = player.animState;
+        player.animState = 0;
+        player.setAnimTo(animState);
+        playerWeapon = next;        
+        player.positionSprites();
+        if ( player.currentSprite != null ) {
+            player.currentSprite.mirror = player.lastMirrorState;
+        }
 	}
+    
+    public static function useAttackCharge() {
+        if ( playerWeapon == "fists" )  return;
+        --attackCharges;
+        if ( attackCharges <= 0 )   dropWeapon();
+    }
 	
 	public static function attemptGrab():Bool {
 		if (( highlightType == "unit" ) && (player.distanceXBetween(highlightedUnit) <= grabRange)) {
 			if ( grabbable(highlightedUnit) ) {
 				if ( highlightedUnit.unitType == "dog" ) {
-					highlightedUnit.kill();
+					highlightedUnit.removeFromGame();
 					swapWeapon("dog");
 					return true;
 				}
@@ -108,6 +142,11 @@ class Player
 	private static function sameHighlight(unit:Unit) {
 		return (( highlightType == "unit" ) && (highlightedUnit == unit));
 	}
+   
+    private static function registerSprite(sprite:TileSprite) {
+        Main.layer.addChild(sprite);
+        sprite.visible = false;
+    }
 	
 	public static function init() {
 		player = Main.player;
@@ -129,5 +168,14 @@ class Player
 		Main.layer.addChildAt(highlightSpriteHandman, 0);
 		highlightUnitToSprite.set("handman", highlightSpriteHandman);
 	}
+    
+    public static function initWeapons() {        
+        bodySpriteDog1 = new TileSprite(Main.layer, "herodog1");
+        registerSprite(bodySpriteDog1);
+        bodySpriteDog2 = new TileSprite(Main.layer, "herodog2");
+        registerSprite(bodySpriteDog2);
+        bodySpriteDog3 = new TileSprite(Main.layer, "herodog3");
+        registerSprite(bodySpriteDog3);
+    }
 	
 }

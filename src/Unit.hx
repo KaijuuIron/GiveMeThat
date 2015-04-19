@@ -90,14 +90,18 @@ class Unit extends Collidable
 		if ( charge > 0 ) {
 			chargeAdd( -1);			
 		} else {
-			if ( animState != 1 ) {
+			if (( animState != 1 ) && (attackSpeed - cooldown < 4)) {
 				resetAnim();
 			}
 		}
 		if ( cooldown > 0 ) --cooldown;
 		if ( canMoveToX(x+dx)) {
 			x += dx;
-			dx = 0.9 * dx;
+            if (isFlying()) {
+                dx = 0.99 * dx;
+            } else {
+			    dx = 0.9 * dx;
+            }
 		} else {
 			if ( ai != null) {
 				if (( dx != 0 ) && ( timePassedFrom(lastJumpTime) > 60)) {
@@ -157,7 +161,7 @@ class Unit extends Collidable
 		positionSprites();	
 	}
 	
-	private function positionSprites() {		
+	public function positionSprites() {		
 		if ( currentSprite != null ) {
 			currentSprite.x = this.x;// + currentSprite.width / 2;
 			currentSprite.y = this.y - currentSprite.height / 2 + this.sizeY / 2;
@@ -201,9 +205,12 @@ class Unit extends Collidable
 		if ( spriteLegsJump != null ) spriteLegsJump.mirror = newMirror;
 	}
 	
+    public function normalDrawingType():Bool {
+        return ( this != Main.player);
+    }    
+    
 	public function draw() {
-		graphics.clear();
-        if ( this != Main.player) {
+        if ( normalDrawingType()) {
             if ( spriteBody1 != null ) {
                 Main.layer.addChild(spriteBody1);
             }
@@ -227,7 +234,7 @@ class Unit extends Collidable
 			Main.layer.addChild(spriteLegsJump);
 			spriteLegsJump.visible = false;
 		}
-        if ( this == Main.player) {
+        if ( !normalDrawingType()) {
             if ( spriteBody1 != null ) {
                 Main.layer.addChild(spriteBody1);
             }
@@ -332,6 +339,9 @@ class Unit extends Collidable
 					Main.playerShootOrder =  false;
 				}
 				if ( ranged ) {
+                    if ( this == Main.player ) {
+                        Player.useAttackCharge();
+                    }
 					var projType:ProjectileType = null;
 					if ( unitType == "gun" ) {
 						projType = Main.projGun;
@@ -356,13 +366,19 @@ class Unit extends Collidable
 						strike(dir, 200, 200);
 					}
 					if ( this == Main.player ) {
-						strike(dir, 100, 200);
+						if (strike(dir, Player.strikeAreaX, Player.strikeAreaY)) {
+                            Player.useAttackCharge();
+                        }
 					}
 				}
 			cooldown = attackSpeed;
 			charge = 1;			
-			//setAnimTo(1);
-			}			
+			if (!normalDrawingType()) {    
+                setAnimTo(2);
+            } else {
+                setAnimTo(1);
+			}		
+            }
 			
 			if ( !isMoving ) {
 				turnTo(angle);
@@ -370,7 +386,7 @@ class Unit extends Collidable
 		}
 	}
 	
-	function strike(dir:Int,strikeAreaWidth:Float=100,strikeAreaHeigth:Float=200) {		
+	function strike(dir:Int,strikeAreaWidth:Float=100,strikeAreaHeigth:Float=200):Bool {		
 		var strikeAreaX:Float = this.x + this.sizeX / 2 * dir;
 		strikeAreaX += dir * strikeAreaWidth / 2;
 		var strikeAreaY:Float = this.y;
@@ -386,6 +402,7 @@ class Unit extends Collidable
 			particale.addChild(rect);
 			Main.field.addChild(particale);										
 		}
+        var hitFlag:Bool = false;
 		for ( another in Main.collidables ) {
 			if (( this != another ) && ( another.type == "unit" )
 				&& (this.infected != another.infected)) {
@@ -396,10 +413,12 @@ class Unit extends Collidable
 					} else {
 						another.takeDamage(0);
 					}
+                    hitFlag = true;
 					trace(this.dmg);
 				}
 			}
 		}
+        return hitFlag;
 	}
 	
 	function chargeAdd(val:Int) {
@@ -487,15 +506,28 @@ class Unit extends Collidable
 		//positionSprites();
 	}
 	
+    public static var noBody:Bool = false;
+    public function destroyBody() {        
+		if ( spriteBody1 != null )	Main.layer.removeChild(spriteBody1);
+		if ( spriteBody2 != null )	Main.layer.removeChild(spriteBody2);
+		if ( spriteBody3 != null )	Main.layer.removeChild(spriteBody3);
+        spriteBody1 = null;
+        spriteBody2 = null;
+        spriteBody3 = null;
+        noBody = true;
+    }
+    
 	public function kill() {
-		Main.enemies.remove(this);		
+        
+        Main.enemies.remove(this);		
 		if ( spriteBody1 != null )	Main.layer.removeChild(spriteBody1);
 		if ( spriteBody2 != null )	Main.layer.removeChild(spriteBody2);
 		if ( spriteBody3 != null )	Main.layer.removeChild(spriteBody3);
 		if ( spriteLegs1 != null )	Main.layer.removeChild(spriteLegs1);
 		if ( spriteLegs2 != null )	Main.layer.removeChild(spriteLegs2);
-		if ( spriteLegsJump != null )	Main.layer.removeChild(spriteLegsJump);
+		if ( spriteLegsJump != null )	Main.layer.removeChild(spriteLegsJump);		
 		new Corpse(this);
+        
 		if ( this.parent == Main.field ) {
 			destroy();		
 		}
@@ -504,6 +536,21 @@ class Unit extends Collidable
 			//Main.pauseGame(Main.textDefeat);
 		}
 	}
+    
+    public function removeFromGame() {
+        
+        Main.enemies.remove(this);		
+		if ( spriteBody1 != null )	Main.layer.removeChild(spriteBody1);
+		if ( spriteBody2 != null )	Main.layer.removeChild(spriteBody2);
+		if ( spriteBody3 != null )	Main.layer.removeChild(spriteBody3);
+		if ( spriteLegs1 != null )	Main.layer.removeChild(spriteLegs1);
+		if ( spriteLegs2 != null )	Main.layer.removeChild(spriteLegs2);
+		if ( spriteLegsJump != null )	Main.layer.removeChild(spriteLegsJump);		
+		if ( this.parent == Main.field ) {
+			destroy();		
+		}
+		hp = 0;
+    }
 	
 	override
 	public function checkCollizion(other:Collidable):Bool {
@@ -551,8 +598,8 @@ class Unit extends Collidable
 		}
 	}
 	
-	public var animState:Int = 0;
-	var animStateLegs:Int = 0;
+	public var animState:Int = 1;
+	var animStateLegs:Int = 1;
 	public function resetAnim() {
 		setAnimTo(1);
 		animState = 1;
@@ -568,7 +615,7 @@ class Unit extends Collidable
 		if ( animState == anim ) {
 			return;
 		}
-		animState = anim;			
+		animState = anim;
 		if ( currentSprite != null ) {
 			currentSprite.visible = false;
 		}
