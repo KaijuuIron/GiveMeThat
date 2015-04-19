@@ -9,7 +9,7 @@ import openfl.Assets;
  */
 
 class InfinitySprite extends Sprite {
-    private var sprites = new Array<Bitmap>();
+    private var sprites:Array<Bitmap>;
     private var fullStageWidth:Int;
     private var fullStageHeight:Int;
     private var spriteHeight:Int;
@@ -18,6 +18,7 @@ class InfinitySprite extends Sprite {
 
     public function new(image) {
         super();
+        sprites = new Array<Bitmap>();
 
         fullStageWidth = Main.fullStageWidth;
         fullStageHeight = Main.fullStageHeight;
