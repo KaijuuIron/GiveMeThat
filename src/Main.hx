@@ -218,7 +218,7 @@ class Main extends Sprite
 		map.push(curPlatform);
 
 		while (i <= length) {
-			random = Random.int(15, fullStageHeight - 150);
+			random = 15 + Math.round(Math.random() * (fullStageHeight - 150 - 15));
 			curPlatform = (random - map[map.length-1] > maxDiff) ? map[map.length-1] + maxDiff : random;
 			map.push(curPlatform);
 			i++;

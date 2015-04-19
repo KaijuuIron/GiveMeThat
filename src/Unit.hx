@@ -40,6 +40,7 @@ class Unit extends Collidable
 	public var aiDir:Int;
 	public var ai:AI;
 	public var lastDamagedTime:Int = 0;
+	public var lastJumpTime:Int = 0;
 	public var playerDetected:Bool = false;
 	
 	public function new() 
@@ -90,7 +91,7 @@ class Unit extends Collidable
 			dx = 0.9 * dx;
 		} else {
 			if ( ai != null) {
-				if ( dx != 0 ) {
+				if (( dx != 0 ) && ( Main.framesPassed - lastJumpTime > 60)) {
 					jump();
 				}
 			}
@@ -204,7 +205,7 @@ class Unit extends Collidable
 			Main.layer.addChild(spriteLegsJump);
 			spriteLegsJump.visible = false;
 		}
-		if ( true ) {
+		if ( false ) {
 			graphics.beginFill(0xffffff);
 			graphics.drawRect(-this.sizeX/2,-this.sizeY/2,this.sizeX,this.sizeY);
 			graphics.endFill();
@@ -214,6 +215,7 @@ class Unit extends Collidable
 	
 	public function jump() {
 		//if ( Math.abs((Main.fullStageHeight - Main.platfromHeightAt(x)) - (this.y+this.sizeY/2)) < 5 ) {
+		this.lastJumpTime = Main.framesPassed;
 		if (!isFlying()) {
 			this.dy = -50;
 		}
@@ -314,6 +316,9 @@ class Unit extends Collidable
 				} else {										
 					if ( unitType == "dog" ) {
 						strike(dir, 100, 100);
+					}					
+					if ( unitType == "handman" ) {
+						strike(dir, 200, 200);
 					}
 					if ( this == Main.player ) {
 						strike(dir, 100, 200);
@@ -335,7 +340,7 @@ class Unit extends Collidable
 		strikeAreaX += dir * strikeAreaWidth / 2;
 		var strikeAreaY:Float = this.y;
 		//strikeAreaY -= strikeAreaHeigth / 2;
-		if (true) {
+		if (false) {
 			//highlight area
 			var particale:ExpandingParticle	= ExpandingParticle.getParticle(strikeAreaX, strikeAreaY,
 													0xff0000, 2, 30);
