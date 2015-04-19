@@ -521,9 +521,13 @@ class Main extends Sprite
 
 		if (pause) {
 			if (playerDead) {
-				addChild(losePopup);
+				addChild(losePopup);                
+                var soundfx1 = Assets.getSound("audio/LOSE-WIN.mp3");
+			    soundfx1.play();
 			} else if(playerWon) {
-				addChild(winPopup);
+				addChild(winPopup);                
+                var soundfx1 = Assets.getSound("audio/LOSE-WIN.mp3");
+			    soundfx1.play();
 			}
 			return;
 		}

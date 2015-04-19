@@ -263,6 +263,10 @@ class Unit extends Collidable
 		this.lastJumpTime = Main.framesPassed;
 		if (!isFlying()) {
 			this.dy = -35;
+            if ( this == Main.player ) {
+                var soundfx1 = Assets.getSound("audio/jump.wav");
+			    soundfx1.play();
+            }
 		}
 	}
 	
@@ -384,16 +388,16 @@ class Unit extends Collidable
 						if (strike(dir, Player.strikeAreaX, Player.strikeAreaY)) {
                             if (Player.playerWeapon == "fists" ) {
                                 this.takeDamage(1);
-                                var soundfx1 = Assets.getSound("audio/hit_hin_on_hero.mp3");
+                                var soundfx1 = Assets.getSound("audio/hit_hin_on_hero.wav");
 				                soundfx1.play();
                             }
                             Player.useAttackCharge();
                             if (Player.playerWeapon == "dog" ) {
-                                var soundfx1 = Assets.getSound("audio/hit_hin_on_hero.mp3");
+                                var soundfx1 = Assets.getSound("audio/hit_hin_on_hero.wav");
 				                soundfx1.play();
                             }
                             if (Player.playerWeapon == "hand" ) {
-                                var soundfx1 = Assets.getSound("audio/hit_handman.mp3");
+                                var soundfx1 = Assets.getSound("audio/hit_handman.wav");
 				                soundfx1.play();
                             }
                         }
@@ -463,9 +467,9 @@ class Unit extends Collidable
                 var soundfx1 = null;
                 if ( source != null ) {
                     if ( source.unitType == "handman" ) {                        
-                        soundfx1 = Assets.getSound("audio/hit_handman.mp3");				        
+                        soundfx1 = Assets.getSound("audio/hit_handman.wav");				        
                     } else {
-                        soundfx1 = Assets.getSound("audio/hit_hin_on_hero.mp3");
+                        soundfx1 = Assets.getSound("audio/hit_hin_on_hero.wav");
                     }
                 }
                 if ( soundfx1 != null ) {
