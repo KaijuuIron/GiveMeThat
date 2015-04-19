@@ -9,20 +9,20 @@ import openfl.Assets;
  */
 
 class ParallaxLayer extends Sprite {
-    private static var sprite;
+    private static var sprite:InfinitySprite;
     private static var speed;
 
 
     public function new(image, initialSpeed) {
-        super();
-        var bmp = Assets.getBitmapData(image);      
-        sprite = new Bitmap(bmp);
+        super(); 
+        sprite = new InfinitySprite(image);
         speed = initialSpeed;
         this.addChild(sprite);
     }
 
     public function onFrame(cameraX:Float = 0, cameraY:Float = 0) {
-        sprite.x = cameraX * speed;
+        sprite.setX(cameraX * speed);
+        sprite.setY(cameraY * speed);
     }
 
 }
