@@ -379,6 +379,9 @@ class Unit extends Collidable
 					}
 					if ( this == Main.player ) {
 						if (strike(dir, Player.strikeAreaX, Player.strikeAreaY)) {
+                            if (Player.playerWeapon == "fist" ) {
+                                this.takeDamage(1);
+                            }
                             Player.useAttackCharge();
                         }
 					}

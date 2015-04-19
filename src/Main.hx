@@ -96,14 +96,19 @@ class Main extends Sprite
 		
 		initPlatforms();
 		
+        var hpFrame:Bitmap = new Bitmap(Assets.getBitmapData("img/framehp.png"));
+        hpFrame.x = 40;
+        hpFrame.y = 30;
+        
 		hpBar = new Sprite();
 		//hpBar.addChild(new Bitmap(Assets.getBitmapData("img/frame.png")));
-		hpBar.graphics.beginFill(0x00ff00);
-		hpBar.graphics.drawRect(0, 0, 100, 10);
+		hpBar.graphics.beginFill(0xa669ef);
+		hpBar.graphics.drawRect(0, 0, 275, 19);
 		hpBar.graphics.endFill();
-		hpBar.x = 50;
-		hpBar.y = 50;		
+		hpBar.x = 42;
+		hpBar.y = 39;		
 		addChild(hpBar);
+        addChild(hpFrame);
 		
 		//AI setup
 		aiSimpleFollow = new AI();
@@ -150,6 +155,7 @@ class Main extends Sprite
 		spawnUnit("dog", (4 + 0.3) * platfromSize);
 		spawnUnit("gun", (3 + 0.5) * platfromSize);
 		spawnUnit("dogAlly", (4 + 0.8) * platfromSize);
+		spawnUnit("handmanAlly", (2 + 0.8) * platfromSize);
 		
 		addEventListener(Event.ENTER_FRAME, onFrame);		
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, onDown);
@@ -313,7 +319,7 @@ class Main extends Sprite
 			newMonster.sizeX = 70;
 			newMonster.sizeY = 140;
 			newMonster.movespeed = 5;
-			newMonster.hpMax = 20;
+			newMonster.hpMax = 30;
 			newMonster.dmg = 10;
 			newMonster.attackSpeed = 60;
 			newMonster.ranged = true;
@@ -323,7 +329,7 @@ class Main extends Sprite
 			newMonster.sizeY = 110;
 			newMonster.movespeed = 4;
 			newMonster.hpMax = 50;
-			newMonster.dmg = 10;
+			newMonster.dmg = 15;
 			newMonster.attackSpeed = 40;
 			newMonster.ranged = false;
 		}
