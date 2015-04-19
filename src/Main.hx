@@ -69,7 +69,10 @@ class Main extends Sprite
 
 	function getBitmap(image):Bitmap {
 		var bmp = Assets.getBitmapData(image);
-		return new Bitmap(bmp);
+		var bitmap = new Bitmap(bmp);
+		bitmap.x = 0 - bitmap.width/2 + fullStageWidth/2;
+		bitmap.y = 0 - bitmap.height/2 + fullStageHeight/2;
+		return bitmap;
 	}
 	
 	function init() 
@@ -89,14 +92,8 @@ class Main extends Sprite
 		var r:Rectangle = cast bmp.rect.clone();
 		
 		pausePopup = getBitmap("img/textstart-pause.png");
-		pausePopup.x -= 220;
-		pausePopup.y -= 280;
 		winPopup = getBitmap("img/textwon.png");
-		winPopup.x -= 220;
-		winPopup.y -= 280;
 		losePopup = getBitmap("img/textlose.png");
-		losePopup.x -= 220;
-		losePopup.y -= 280;
 
 		movedLayers.push(new MovedLayer("img/bgclouds.png", -1));
 		for ( i in 0...movedLayers.length ) {
