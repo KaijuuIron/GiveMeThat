@@ -54,7 +54,7 @@ class AI
 		}				
 		if ( unit.infected ) {
 			var angleToTarget:Float = Math.atan2(target.y - unit.y, target.x - unit.x);
-			if (( unit.distanceTo(target) < shootDist )) {
+			if (( unit.distanceTo(target) - unit.sizeX/2 - target.sizeX/2 < shootDist )) {
 				unit.shoot(angleToTarget);
 				unit.bored = false;
 			}			

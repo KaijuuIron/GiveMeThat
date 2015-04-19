@@ -131,14 +131,14 @@ class Main extends Sprite
 		player.sizeX = 80;
 		player.sizeY = 80;
 		player.movespeed = 8;
-		player.hpMax = 100;
+		player.hpMax = 1000;
 		player.hp = player.hpMax;
 		player.dmg = playerBaseDmg;
 		player.ranged = false;		
 		player.infected = false;
-		player.spriteLegs1 = new TileSprite(layer, "dogLeg1");
-		player.spriteLegs2 = new TileSprite(layer, "dogLeg2");
-		player.spriteLegsJump = new TileSprite(layer, "dogLeg3");
+		player.spriteLegs1 = new TileSprite(layer, "heroleg1");
+		player.spriteLegs2 = new TileSprite(layer, "heroleg2");
+		player.spriteLegsJump = new TileSprite(layer, "heroleg3");
 		Player.init();
 		Player.dropWeapon();
 		addUnit(player, (0 + 0.5) * platfromSize);
@@ -157,6 +157,14 @@ class Main extends Sprite
 
 	function initSheet(sheet:TilesheetEx) {
 		//addDefToSheet(sheet, "back", "img/bg0.png");
+        addDefToSheet(sheet, "herobasic1", "img/herobody1.png");
+        addDefToSheet(sheet, "herobasic2", "img/herobody2.png");
+        addDefToSheet(sheet, "herobasic3", "img/herobody3.png");
+        addDefToSheet(sheet, "heroleg1", "img/herolegs1.png");
+        addDefToSheet(sheet, "heroleg2", "img/herolegs2.png");
+        addDefToSheet(sheet, "heroleg3", "img/herolegs3.png");
+        
+        
 		addDefToSheet(sheet, "dog1", "img/dogbody1.png");
 		addDefToSheet(sheet, "dog2", "img/evildogbody2.png");
 		addDefToSheet(sheet, "dog3", "img/evildogbody3.png");		
@@ -170,6 +178,7 @@ class Main extends Sprite
 		addDefToSheet(sheet, "evildogLeg2", "img/doglegs2.png");
 		addDefToSheet(sheet, "evildogLeg3", "img/doglegs3.png");
 		addDefToSheet(sheet, "evildoglight", "img/evildoglight.png");
+        
 		addDefToSheet(sheet, "gun1", "img/gunbody1.png");
 		addDefToSheet(sheet, "gun2", "img/evilgunbody2.png");
 		addDefToSheet(sheet, "gun3", "img/evilgunbody3.png");
@@ -189,7 +198,10 @@ class Main extends Sprite
 		addDefToSheet(sheet, "evilhandman3", "img/evilhandmanlbody3.png");
 		addDefToSheet(sheet, "handmanLeg1", "img/handmanlegs1.png");
 		addDefToSheet(sheet, "handmanLeg2", "img/handmanlegs2.png");
-		addDefToSheet(sheet, "handmanLeg3", "img/handmanlegs3.png");
+		addDefToSheet(sheet, "handmanLeg3", "img/handmanlegs3.png");        
+		addDefToSheet(sheet, "evilhandmanLeg1", "img/evilhandmanlegs1.png");
+		addDefToSheet(sheet, "evilhandmanLeg2", "img/evilhandmanlegs2.png");
+		addDefToSheet(sheet, "evilhandmanLeg3", "img/evilhandmanlegs3.png");
 		addDefToSheet(sheet, "evilhandmanlight", "img/evilhandmanlight.png");
 	}
 	
@@ -279,7 +291,7 @@ class Main extends Sprite
 		newMonster.unitType = monsterType;
 		if (truncName(newMonster.unitType) == "dog" ) {
 			newMonster.sizeX = 80;
-			newMonster.sizeY = 80;
+			newMonster.sizeY = 70;
 			newMonster.movespeed = 6;
 			newMonster.hpMax = 10;
 			newMonster.dmg = 5;
@@ -287,8 +299,8 @@ class Main extends Sprite
 			newMonster.ranged = false;
 		}
 		if ( truncName(newMonster.unitType) == "gun" ) {	
-			newMonster.sizeX = 100;
-			newMonster.sizeY = 160;
+			newMonster.sizeX = 90;
+			newMonster.sizeY = 150;
 			newMonster.movespeed = 5;
 			newMonster.hpMax = 20;
 			newMonster.dmg = 10;
@@ -296,8 +308,8 @@ class Main extends Sprite
 			newMonster.ranged = true;
 		}		
 		if (truncName(newMonster.unitType) == "handman" ) {
-			newMonster.sizeX = 200;
-			newMonster.sizeY = 140;
+			newMonster.sizeX = 170;
+			newMonster.sizeY = 120;
 			newMonster.movespeed = 4;
 			newMonster.hpMax = 50;
 			newMonster.dmg = 10;
