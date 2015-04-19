@@ -51,8 +51,8 @@ class Player
             strikeAreaY = 200;
         }
 		if ( next == "dog" ) {
-            attackCharges = 2;
-            player.dmg = 20;
+            attackCharges = 3;
+            player.dmg = 10;
             player.ranged = false;
             strikeAreaX = 100;
             strikeAreaY = 200;
@@ -63,7 +63,7 @@ class Player
         
 		if ( next == "gun" ) {
             attackCharges = 5;
-            player.dmg = 10;
+            player.dmg = 20;
             player.ranged = true;
             strikeAreaX = 100;
             strikeAreaY = 200;
@@ -73,8 +73,8 @@ class Player
         }        
         
 		if ( next == "hand" ) {
-            attackCharges = 4;
-            player.dmg = 25;
+            attackCharges = 6;
+            player.dmg = 30;
             player.ranged = false;
             strikeAreaX = 150;
             strikeAreaY = 200;
@@ -124,7 +124,7 @@ class Player
 	private static function grabbable(unit:Unit):Bool {
         if ( unit.noBody )  return false;
 		if (unit.unitType == "dog")	return true;
-		if (unit.unitType == "gun")	return true;
+		if (unit.unitType == "gun")	return (unit.hp/unit.hpMax < 0.75);
 		if (unit.unitType == "handman")	return (unit.hp/unit.hpMax < 0.5);
 		return false;
 	}
