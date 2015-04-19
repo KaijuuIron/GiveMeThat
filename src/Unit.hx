@@ -354,6 +354,8 @@ class Unit extends Collidable
                     if ( this == Main.player ) {
                         if ( Player.playerWeapon == "gun" ) {
                             projType = Main.projGun;
+                            var soundfx1 = Assets.getSound("audio/gunshoot.wav");
+                            soundfx1.play();
                         }
                     }
 					var proj:Projectile = new Projectile(projType);
