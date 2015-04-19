@@ -117,7 +117,9 @@ class Player
     public static function redHandOn() {
         redHandSprite.visible = true;
         redHandTime = 30;
-        redHandTick();
+        redHandTick();        
+        var soundfx1 = Assets.getSound("audio/grab.wav");
+        soundfx1.play();
     }
 	
 	public static function attemptGrab():Bool {
