@@ -35,6 +35,9 @@ class Player
     private static var bodySpriteHand1:TileSprite;
 	private static var bodySpriteHand2:TileSprite;
 	private static var bodySpriteHand3:TileSprite;
+    
+    public static var redHandSprite:TileSprite;
+    public static var redHandTime:Int;
 	
 	public static function dropWeapon() {
         swapWeapon("fists");
@@ -97,10 +100,30 @@ class Player
         --attackCharges;
         if ( attackCharges <= 0 )   dropWeapon();
     }
+    
+    public static function redHandTick() {
+        if ( redHandSprite.visible = true ) {
+            redHandSprite.x = player.x;
+            redHandSprite.y = player.y;
+            redHandSprite.mirror = player.currentSprite.mirror;
+            --redHandTime;
+            redHandSprite.alpha = 0.5 + (0.5 * redHandTime / 30);
+            if ( redHandTime <= 0 ) {
+                redHandSprite.visible = false;
+            }
+        }
+    }
+    
+    public static function redHandOn() {
+        redHandSprite.visible = true;
+        redHandTime = 30;
+        redHandTick();
+    }
 	
 	public static function attemptGrab():Bool {
 		if (( highlightType == "unit" ) && (player.distanceXBetween(highlightedUnit) <= grabRange)) {
-			if ( grabbable(highlightedUnit) ) {
+			if ( grabbable(highlightedUnit) ) {                
+                redHandOn();
 				if ( highlightedUnit.unitType == "dog" ) {
 					highlightedUnit.removeFromGame();
 					swapWeapon("dog");
@@ -123,7 +146,7 @@ class Player
 	
 	private static function grabbable(unit:Unit):Bool {
         if ( unit.noBody )  return false;
-		if (unit.unitType == "dog")	return true;
+		if (unit.unitType == "dog")	return (playerWeapon=="fists");
 		if (unit.unitType == "gun")	return (unit.hp/unit.hpMax < 0.75);
 		if (unit.unitType == "handman")	return (unit.hp/unit.hpMax < 0.5);
 		return false;
@@ -206,6 +229,9 @@ class Player
 		highlightSpriteHandman.visible = false;
 		Main.layer.addChildAt(highlightSpriteHandman, 0);
 		highlightUnitToSprite.set("handman", highlightSpriteHandman);
+        
+        redHandSprite = new TileSprite(Main.layer, "framehp");
+        registerSprite(redHandSprite);
 	}
     
     public static function initWeapons() {        

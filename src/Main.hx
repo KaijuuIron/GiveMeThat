@@ -151,12 +151,22 @@ class Main extends Sprite
         Player.initWeapons();
 		trackPlayerHp();
 		
-		spawnUnit("handman", (2 + 0.5) * platfromSize);
-		spawnUnit("dog", (4 + 0.3) * platfromSize);
-		spawnUnit("gun", (3 + 0.5) * platfromSize);
-		spawnUnit("dogAlly", (4 + 0.8) * platfromSize);
-		spawnUnit("handmanAlly", (2 + 0.8) * platfromSize);
+		//spawnUnit("handman", (2 + 0.5) * platfromSize);
+		//spawnUnit("dog", (4 + 0.3) * platfromSize);
+		//spawnUnit("gun", (3 + 0.5) * platfromSize);
+		//spawnUnit("dogAlly", (4 + 0.8) * platfromSize);
+        fillWithMobs();
 		
+        
+        var bmp = new Bitmap(Assets.getBitmapData("img/signlight.png"));		
+        bmp.x = fieldWidthTotal - platfromSize / 2;
+        bmp.y = fullStageHeight - platfromHeightAt(bmp.x) - bmp.height;
+        field.addChild(bmp);
+        var signstop = new Bitmap(Assets.getBitmapData("img/sign1.png"));		
+        signstop.x = fieldWidthTotal - platfromSize / 2;
+        signstop.y = fullStageHeight - platfromHeightAt(signstop.x) - bmp.height;
+        field.addChild(signstop);
+        
 		addEventListener(Event.ENTER_FRAME, onFrame);		
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, onDown);
 		stage.addEventListener(KeyboardEvent.KEY_UP, onUp);
@@ -229,7 +239,7 @@ class Main extends Sprite
 	}
 	
 	static var platformsMap:Array<Int>;
-	static function initPlatforms() {
+	function initPlatforms() {
 		platformsMap = generateMap(stageLength);
 		for ( i in 0...platformsMap.length ) {			
 			var bmp;
@@ -242,7 +252,12 @@ class Main extends Sprite
 			bmp.x = i * platfromSize;
 			field.addChildAt(bmp, 1);
 		}
-	}
+	}    
+    function fillWithMobs() {
+        for ( i in 2...platformsMap.length ) {	            
+            spawnRandomMob(i * platfromSize);
+        }
+    }
 	public static function generateMap(length:Int):Array<Int> {
 		var map = new Array<Int>();
 		var i = 0;
@@ -280,6 +295,30 @@ class Main extends Sprite
 	public static function plaformRightBorder(x:Float):Float {
 		return platfromSize * Math.ceil(x / platfromSize);
 	}
+    private function spawnRandomMob(x:Float) {
+        var rval:Float = Math.random();        
+        if ( rval < 0.4 )   return;
+        else if (rval < 0.8) {            
+		    spawnUnit("dog", x + 0.8 * platfromSize);
+        }
+        else if (rval < 0.95) {            
+		    spawnUnit("gun", x + 0.8 * platfromSize);
+        }
+        else if (rval < 1.0) {            
+		    spawnUnit("handman", x + 0.8 * platfromSize);
+        }
+        rval = Math.random();
+        if ( rval < 0.3 ) {
+            rval = Math.random();
+            if ( rval < 0.8 ) {
+                spawnUnit("dogAlly", x + 0.3 * platfromSize);
+            } else if ( rval < 0.95 ) {
+                spawnUnit("gunAlly", x + 0.3 * platfromSize);
+            } else {
+                spawnUnit("handmanAlly", x + 0.3 * platfromSize);
+            }
+        }
+    }
 	
 	public static function addUnit(unit:Unit, x:Float) {		
 		unit.currentSprite = unit.spriteBody1;
@@ -521,6 +560,7 @@ class Main extends Sprite
 
 		traceCamera();
 		Player.updateGrabHighlight();
+        Player.redHandTick();
 	}
 	
 	function traceCamera() {
