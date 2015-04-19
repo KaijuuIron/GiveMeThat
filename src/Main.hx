@@ -49,6 +49,7 @@ class Main extends Sprite
 	static var hpBar:Sprite;
 
 	public static var paralaxLayers = new Array<ParallaxLayer>();
+	public static var movedLayers = new Array<MovedLayer>();
 	
 	public static var mainInstance;
 	
@@ -75,9 +76,9 @@ class Main extends Sprite
 		var sheet:TilesheetEx = new TilesheetEx(bmp);			
 		var r:Rectangle = cast bmp.rect.clone();
 
-		paralaxLayers.push(new ParallaxLayer("img/bgclouds.png", 0.5));
-		for ( i in 0...paralaxLayers.length ) {
-			addChild(paralaxLayers[i]);
+		movedLayers.push(new MovedLayer("img/bgclouds.png", -1));
+		for ( i in 0...movedLayers.length ) {
+			addChild(movedLayers[i]);
 		}
 		
 		field = new Sprite();
@@ -468,6 +469,10 @@ class Main extends Sprite
 
 		for ( i in 0...paralaxLayers.length ) {
 			paralaxLayers[i].onFrame(field.x, field.y);
+		}
+
+		for ( i in 0...movedLayers.length ) {
+			movedLayers[i].onFrame(field.x, field.y);
 		}
 
 		traceCamera();
