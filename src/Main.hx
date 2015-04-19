@@ -502,6 +502,7 @@ class Main extends Sprite
 		globalFilter.graphics.endFill();
 		globalFilter.alpha = 1.0;
 	}
+    var doOnce:Bool = false;
 	function onFrame(e) {				
 		layer.render();		
 		/*if ( pause && tutotalOn && (tutotalLessonCurrent == 1 )) {
@@ -518,6 +519,7 @@ class Main extends Sprite
 		}
 
 		if (pause) {
+            if (!doOnce) {
 			if (playerDead) {
 				addChild(losePopup);                
                 //var soundfx1 = Assets.getSound("audio/LOSE-WIN.mp3");
@@ -527,6 +529,8 @@ class Main extends Sprite
                 //var soundfx1 = Assets.getSound("audio/LOSE-WIN.mp3");
 			    //soundfx1.play();
 			}
+            doOnce = true;
+            }
 			return;
 		}
 		++framesPassed;
