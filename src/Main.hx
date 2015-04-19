@@ -629,6 +629,7 @@ class Main extends Sprite
 		keymap.set(e.keyCode, true);						
 		if (e.keyCode == 32) {
 			//space
+            player.jump();
 		}
 		if ((e.keyCode == 38 ) || (e.keyCode == 87)) {
 			player.jump();
@@ -645,11 +646,13 @@ class Main extends Sprite
 		
 		if ( e.keyCode == 82 ) {
 			//R
+            playerShootOrder = true;
 		}
 		if ( e.keyCode == 69 ) {
 			//E
+            playerShootOrder = true;
 		}
-		if ( e.keyCode == 80 ) {
+		if (( e.keyCode == 80 ) || ( e.keyCode == 13 )) {
 			//P
             if (!gameEnded) {
 			    togglePause();
@@ -657,7 +660,7 @@ class Main extends Sprite
 		}
 		if ( e.keyCode == 84 ) {
 			//T
-			
+			Player.attemptGrab();
 		}
 		if ( e.keyCode == 74 ) {
 			//J
