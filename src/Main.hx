@@ -87,6 +87,7 @@ class Main extends Sprite
 		
 		var bmp = Assets.getBitmapData("img/bg0.png");
 		var mainBg = new Bitmap(bmp);
+		mainBg.width = fullStageWidth;
 		addChild(mainBg);
 		var sheet:TilesheetEx = new TilesheetEx(bmp);			
 		var r:Rectangle = cast bmp.rect.clone();
@@ -196,8 +197,7 @@ class Main extends Sprite
 		stage.addEventListener(KeyboardEvent.KEY_UP, onUp);
 
 		togglePause();
-		var soundfx1 = Assets.getSound("audio/bg_music.mp3");
-	    soundfx1.play();
+		
 	}
 
 	function initSheet(sheet:TilesheetEx) {
@@ -502,7 +502,6 @@ class Main extends Sprite
 		globalFilter.graphics.endFill();
 		globalFilter.alpha = 1.0;
 	}
-    var doOnce:Bool = false;
 	function onFrame(e) {				
 		layer.render();		
 		/*if ( pause && tutotalOn && (tutotalLessonCurrent == 1 )) {
@@ -519,18 +518,11 @@ class Main extends Sprite
 		}
 
 		if (pause) {
-            if (!doOnce) {
 			if (playerDead) {
-				addChild(losePopup);                
-                //var soundfx1 = Assets.getSound("audio/LOSE-WIN.mp3");
-			    //soundfx1.play();
+				addChild(losePopup);
 			} else if(playerWon) {
-				addChild(winPopup);                
-                //var soundfx1 = Assets.getSound("audio/LOSE-WIN.mp3");
-			    //soundfx1.play();
+				addChild(winPopup);
 			}
-            doOnce = true;
-            }
 			return;
 		}
 		++framesPassed;
