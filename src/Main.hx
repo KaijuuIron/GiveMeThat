@@ -96,14 +96,19 @@ class Main extends Sprite
 		
 		initPlatforms();
 		
+        var hpFrame:Bitmap = new Bitmap(Assets.getBitmapData("img/framehp.png"));
+        hpFrame.x = 40;
+        hpFrame.y = 30;
+        
 		hpBar = new Sprite();
 		//hpBar.addChild(new Bitmap(Assets.getBitmapData("img/frame.png")));
-		hpBar.graphics.beginFill(0x00ff00);
-		hpBar.graphics.drawRect(0, 0, 100, 10);
+		hpBar.graphics.beginFill(0xa669ef);
+		hpBar.graphics.drawRect(0, 0, 275, 19);
 		hpBar.graphics.endFill();
-		hpBar.x = 50;
-		hpBar.y = 50;		
+		hpBar.x = 42;
+		hpBar.y = 39;		
 		addChild(hpBar);
+        addChild(hpFrame);
 		
 		//AI setup
 		aiSimpleFollow = new AI();
@@ -129,26 +134,28 @@ class Main extends Sprite
 		corpses = new List<Corpse>();
 				
 		player = new Unit();
-		player.sizeX = 80;
-		player.sizeY = 80;
+		player.sizeX = 70;
+		player.sizeY = 75;
 		player.movespeed = 8;
-		player.hpMax = 1000;
+		player.hpMax = 100;
 		player.hp = player.hpMax;
 		player.dmg = playerBaseDmg;
 		player.ranged = false;		
 		player.infected = false;
 		player.spriteLegs1 = new TileSprite(layer, "heroleg1");
 		player.spriteLegs2 = new TileSprite(layer, "heroleg2");
-		player.spriteLegsJump = new TileSprite(layer, "heroleg3");
-		Player.init();
+		player.spriteLegsJump = new TileSprite(layer, "heroleg3");				
+        Player.init();
 		Player.dropWeapon();
-		addUnit(player, (0 + 0.5) * platfromSize);
+        addUnit(player, (0 + 0.5) * platfromSize);
+        Player.initWeapons();
 		trackPlayerHp();
 		
 		spawnUnit("handman", (2 + 0.5) * platfromSize);
 		spawnUnit("dog", (4 + 0.3) * platfromSize);
 		spawnUnit("gun", (3 + 0.5) * platfromSize);
 		spawnUnit("dogAlly", (4 + 0.8) * platfromSize);
+		spawnUnit("handmanAlly", (2 + 0.8) * platfromSize);
 		
 		addEventListener(Event.ENTER_FRAME, onFrame);		
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, onDown);
@@ -161,6 +168,15 @@ class Main extends Sprite
         addDefToSheet(sheet, "herobasic1", "img/herobody1.png");
         addDefToSheet(sheet, "herobasic2", "img/herobody2.png");
         addDefToSheet(sheet, "herobasic3", "img/herobody3.png");
+        addDefToSheet(sheet, "herodog1", "img/herobodydog1.png");
+        addDefToSheet(sheet, "herodog2", "img/herobodydog2.png");
+        addDefToSheet(sheet, "herodog3", "img/herobodydog3.png");        
+        addDefToSheet(sheet, "herogun1", "img/herobodygun1.png");
+        addDefToSheet(sheet, "herogun2", "img/herobodygun2.png");
+        addDefToSheet(sheet, "herogun3", "img/herobodygun3.png");        
+        addDefToSheet(sheet, "herohand1", "img/herobodyhandman1.png");
+        addDefToSheet(sheet, "herohand2", "img/herobodyhandman2.png");
+        addDefToSheet(sheet, "herohand3", "img/herobodyhandman3.png");
         addDefToSheet(sheet, "heroleg1", "img/herolegs1.png");
         addDefToSheet(sheet, "heroleg2", "img/herolegs2.png");
         addDefToSheet(sheet, "heroleg3", "img/herolegs3.png");
@@ -278,7 +294,7 @@ class Main extends Sprite
 		}
 	}
 	
-	private static function truncName(name:String):String {
+	public static function truncName(name:String):String {
 		if ( name.substr(name.length - 4) == "Ally" ) {	
 			return name.substr(0, name.length - 4);
 		} else {
@@ -291,8 +307,8 @@ class Main extends Sprite
 		var newMonster = new Unit();				
 		newMonster.unitType = monsterType;
 		if (truncName(newMonster.unitType) == "dog" ) {
-			newMonster.sizeX = 80;
-			newMonster.sizeY = 70;
+			newMonster.sizeX = 65;
+			newMonster.sizeY = 60;
 			newMonster.movespeed = 6;
 			newMonster.hpMax = 10;
 			newMonster.dmg = 5;
@@ -300,20 +316,20 @@ class Main extends Sprite
 			newMonster.ranged = false;
 		}
 		if ( truncName(newMonster.unitType) == "gun" ) {	
-			newMonster.sizeX = 90;
-			newMonster.sizeY = 150;
+			newMonster.sizeX = 70;
+			newMonster.sizeY = 140;
 			newMonster.movespeed = 5;
-			newMonster.hpMax = 20;
+			newMonster.hpMax = 30;
 			newMonster.dmg = 10;
-			newMonster.attackSpeed = 30;
+			newMonster.attackSpeed = 60;
 			newMonster.ranged = true;
 		}		
 		if (truncName(newMonster.unitType) == "handman" ) {
-			newMonster.sizeX = 170;
-			newMonster.sizeY = 120;
+			newMonster.sizeX = 150;
+			newMonster.sizeY = 110;
 			newMonster.movespeed = 4;
 			newMonster.hpMax = 50;
-			newMonster.dmg = 10;
+			newMonster.dmg = 15;
 			newMonster.attackSpeed = 40;
 			newMonster.ranged = false;
 		}
@@ -374,6 +390,24 @@ class Main extends Sprite
 		projGun.bmp = "img/gunbullet.png";
 	}
 	
+    
+	public static var heal:Bool = false;
+	public static var healTime:Int = 0;
+	public static function healOn() {
+		heal = true;
+		healTime = 60 * 1;
+		globalFilter.graphics.clear();
+		globalFilter.graphics.beginFill(0x00ff00, 1.0);
+		globalFilter.graphics.drawRect(0, 0, fullStageWidth, fullStageHeight);
+		globalFilter.graphics.endFill();
+		globalFilter.alpha = 0.1;
+	}
+	
+	public static function healOff() {
+		heal = false;
+		resetGlobalFilter();
+	}
+    
 	/* SETUP */
 
 	public function new() 
@@ -463,6 +497,16 @@ class Main extends Sprite
 			corpse.decay();
 		}
 		
+		if ( healTime > 0 ) {
+			--healTime;
+			globalFilter.alpha = 0.0015 * (10 + healTime % 60);
+			//if ( healTime % 60 == 0 ) {
+				//player.heal(1);
+			//}
+			if ( healTime <= 0 ) {
+				healOff();
+			}
+		}
 		for ( p in particles ) {
 			p.tick();
 		}
