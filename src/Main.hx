@@ -675,7 +675,11 @@ class Main extends Sprite
     function setPause(value:Bool) {        
         pause = value;
 		if (value) {
-			addChild(pausePopup);
+            var playerDead = player.hp <= 0;
+		    var playerWon = player.x >= fieldWidthTotal - platfromSize / 2 - 20;
+            if (!playerDead && !playerWon) {
+				addChild(pausePopup);
+			}			
 		} else {
 			removeChild(pausePopup);			
 		}
