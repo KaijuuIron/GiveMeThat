@@ -164,7 +164,7 @@ class Main extends Sprite
 		player.sizeY = 75;
 		player.movespeed = 8;
         player.attackSpeed = 10;
-		player.hpMax = 100;
+		player.hpMax = 200;
 		player.hp = player.hpMax;
 		player.dmg = playerBaseDmg;
 		player.ranged = false;		
