@@ -213,12 +213,13 @@ class Main extends Sprite
 		var i = 0;
 		var curPlatform = 15;
 		var random:Int;
+		var maxDiff = 150;
 
 		map.push(curPlatform);
 
 		while (i <= length) {
-			random = Random.int(15, fullStageHeight);
-			curPlatform = (random - map[map.length-1] > 150) ? 150 : random;
+			random = Random.int(15, fullStageHeight - 150);
+			curPlatform = (random - map[map.length-1] > maxDiff) ? map[map.length-1] + maxDiff : random;
 			map.push(curPlatform);
 			i++;
 		}
