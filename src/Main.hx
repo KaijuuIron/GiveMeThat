@@ -22,6 +22,7 @@ class Main extends Sprite
 	var inited:Bool;
 	public static var framesPassed:Int = 0;
 	static var pause:Bool = false;
+	static var gameEnded:Bool = false;
 	
 	public static var aiSimpleFollow:AI;
 	public static var aiSimpleRanged:AI;
@@ -512,13 +513,17 @@ class Main extends Sprite
 			if ( keymap.get(40) || keymap.get(83) ) continueGame(); 		
 		}*/
 		var playerDead = player.hp <= 0;
-		if (playerDead) {
-			togglePause(true);
+		var playerWon = player.x >= fieldWidthTotal - platfromSize / 2 - 20;
+		if (playerDead || playerWon) {
+			setPause(true);
+			gameEnded = true;
 		}
 
 		if (pause) {
 			if (playerDead) {
 				addChild(losePopup);
+			} else if(playerWon) {
+				addChild(winPopup);
 			}
 			return;
 		}
@@ -643,7 +648,9 @@ class Main extends Sprite
 		}
 		if ( e.keyCode == 80 ) {
 			//P
-			togglePause();
+            if (!gameEnded) {
+			    togglePause();
+            }
 		}
 		if ( e.keyCode == 84 ) {
 			//T
@@ -659,18 +666,19 @@ class Main extends Sprite
 		}
 	}
 
-	function togglePause(value:Bool = null):Void {
-		if (value != null) {
-			pause = value;
-		} else {
-			pause = !pause;
-		}
-		if (pause) {
+	function togglePause():Void {		
+        pause = !pause;
+		setPause(pause);
+	}
+    
+    function setPause(value:Bool) {        
+        pause = value;
+		if (value) {
 			addChild(pausePopup);
 		} else {
 			removeChild(pausePopup);			
 		}
-	}
+    }
 	
 	function onUp(e) {
 		keymap.set(e.keyCode, false);
