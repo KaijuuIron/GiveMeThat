@@ -13,7 +13,7 @@ import openfl.Assets;
 
 /**
  * ...
- * @author Al
+ * @author Al, LonelyFlame
  */
 
 class Main extends Sprite 
@@ -23,8 +23,9 @@ class Main extends Sprite
 	public static var framesPassed:Int = 0;
 	static var pause:Bool = false;
 	
-	var aiSimpleFollow:AI;
-	var aiSimpleRanged:AI;
+	public static var aiSimpleFollow:AI;
+	public static var aiSimpleRanged:AI;
+	public static var aiAlly:AI;
 	
 	public static var fullStageWidth:Int;	
 	public static var fullStageHeight:Int;
@@ -42,6 +43,7 @@ class Main extends Sprite
 	public static var particles:List<ExpandingParticle> = new List<ExpandingParticle>();
 	
 	public static var platfromSize:Int = 320;
+	public static var stageLength:Int = 50;
 	
 	static var globalFilter:Sprite;
 	static var hpBar:Sprite;
@@ -64,25 +66,21 @@ class Main extends Sprite
 		fullStageWidth = stage.stageWidth;
 		fullStageHeight = stage.stageHeight;
 		fieldHeightTotal = fullStageHeight;
-		fieldWidthTotal = 2 * fullStageWidth;
+		fieldWidthTotal = platfromSize * stageLength;
 		
-		var bmp = Assets.getBitmapData("img/bg0.png");
+		var bmp = Assets.getBitmapData("img/bg0.png");		
+		addChild(new Bitmap(bmp));
 		var sheet:TilesheetEx = new TilesheetEx(bmp);			
 		var r:Rectangle = cast bmp.rect.clone();
 		
 		field = new Sprite();
-		addChildAt(field, 0);		
+		addChild(field);		
 				
 		initSheet(sheet);
 		layer = new TileLayer(sheet, false);
 		field.addChildAt(layer.view, 0);		
 		layer.x = 0;
 		layer.y = 0;
-		var back = new TileSprite(layer, "back");
-		back.mirror = 1;
-		back.x = fullStageWidth / 2;
-		back.y = fullStageHeight / 2;
-		field.addChildAt(new Bitmap(bmp), 0);
 		
 		globalFilter = new Sprite();
 		resetGlobalFilter();
@@ -104,12 +102,20 @@ class Main extends Sprite
 		aiSimpleFollow = new AI();
 		aiSimpleFollow.shootDist = platfromSize * 0.4;
 		aiSimpleFollow.followDist = platfromSize * 0.2;
-		aiSimpleFollow.sightDist = platfromSize * 2;
+		aiSimpleFollow.sightDist = platfromSize * 1.5;
 		
 		aiSimpleRanged = new AI();
 		aiSimpleRanged.shootDist = platfromSize * 2;
 		aiSimpleRanged.followDist = platfromSize * 1;
-		aiSimpleRanged.sightDist = platfromSize * 3;
+		aiSimpleRanged.sightDist = platfromSize * 2.5;
+		
+		aiAlly = new AI();
+		aiAlly.shootDist = platfromSize * 1;
+		aiAlly.followDist = platfromSize * 0.5;
+		aiAlly.sightDist = platfromSize * 1.5;
+		aiAlly.followPlayer = false;
+		
+		initProjectiles();
 		
 		collidables = new Array<Collidable>();
 		enemies = new Array<Unit>();
@@ -123,19 +129,24 @@ class Main extends Sprite
 		player.hp = player.hpMax;
 		player.dmg = playerBaseDmg;
 		player.ranged = false;		
+		player.infected = false;
 		player.spriteLegs1 = new TileSprite(layer, "dogLeg1");
 		player.spriteLegs2 = new TileSprite(layer, "dogLeg2");
 		player.spriteLegsJump = new TileSprite(layer, "dogLeg3");
 		Player.init();
 		Player.dropWeapon();
-		addUnit(player, (1 + 0.5) * platfromSize);
+		addUnit(player, (0 + 0.5) * platfromSize);
 		trackPlayerHp();
 		
-		spawnUnit("dog", (2 + 0.5) * platfromSize);
+		spawnUnit("handman", (2 + 0.5) * platfromSize);
+		spawnUnit("dog", (4 + 0.3) * platfromSize);
+		spawnUnit("gun", (3 + 0.5) * platfromSize);
+		spawnUnit("dogAlly", (4 + 0.8) * platfromSize);
 		
 		addEventListener(Event.ENTER_FRAME, onFrame);		
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, onDown);
 		stage.addEventListener(KeyboardEvent.KEY_UP, onUp);
+		
 	}
 
 	function initSheet(sheet:TilesheetEx) {
@@ -153,6 +164,27 @@ class Main extends Sprite
 		addDefToSheet(sheet, "evildogLeg2", "img/doglegs2.png");
 		addDefToSheet(sheet, "evildogLeg3", "img/doglegs3.png");
 		addDefToSheet(sheet, "evildoglight", "img/evildoglight.png");
+		addDefToSheet(sheet, "gun1", "img/gunbody1.png");
+		addDefToSheet(sheet, "gun2", "img/evilgunbody2.png");
+		addDefToSheet(sheet, "gun3", "img/evilgunbody3.png");
+		addDefToSheet(sheet, "evilgun1", "img/evilgunbody1.png");
+		addDefToSheet(sheet, "evilgun2", "img/evilgunbody2.png");
+		addDefToSheet(sheet, "evilgun3", "img/evilgunbody3.png");
+		addDefToSheet(sheet, "gunLeg1", "img/gunlegs1.png");
+		addDefToSheet(sheet, "gunLeg2", "img/gunlegs2.png");
+		addDefToSheet(sheet, "gunLeg3", "img/gunlegs3.png");
+		addDefToSheet(sheet, "evilgunlight", "img/evilgunlight.png");
+		
+		addDefToSheet(sheet, "handman1", "img/handmanlbody1.png");
+		addDefToSheet(sheet, "handman2", "img/evilhandmanlbody2.png");
+		addDefToSheet(sheet, "handman3", "img/evilhandmanlbody3.png");
+		addDefToSheet(sheet, "evilhandman1", "img/evilhandmanlbody1.png");
+		addDefToSheet(sheet, "evilhandman2", "img/evilhandmanlbody2.png");
+		addDefToSheet(sheet, "evilhandman3", "img/evilhandmanlbody3.png");
+		addDefToSheet(sheet, "handmanLeg1", "img/handmanlegs1.png");
+		addDefToSheet(sheet, "handmanLeg2", "img/handmanlegs2.png");
+		addDefToSheet(sheet, "handmanLeg3", "img/handmanlegs3.png");
+		addDefToSheet(sheet, "evilhandmanlight", "img/evilhandmanlight.png");
 	}
 	
 	function addDefToSheet(sheet:TilesheetEx, name:String, bmp:String) {
@@ -163,13 +195,45 @@ class Main extends Sprite
 	
 	static var platformsMap:Array<Int>;
 	static function initPlatforms() {
-		platformsMap = [95, 0, 190, 15,15,15,15,15,15,15,15,15,15];
-		for ( i in 0...platformsMap.length ) {
-			var bmp = new Bitmap(Assets.getBitmapData("img/tile1.png"));
+		platformsMap = generateMap(stageLength);
+		for ( i in 0...platformsMap.length ) {			
+			var bmp;
+			if ( platformsMap[i] < 95 ) {
+				bmp = new Bitmap(Assets.getBitmapData("img/tile1.png"));
+			} else {
+				bmp = new Bitmap(Assets.getBitmapData("img/tiletall.png"));
+			}
 			bmp.y = fullStageHeight - platfromHeightAt(i * platfromSize);
 			bmp.x = i * platfromSize;
 			field.addChildAt(bmp, 1);
 		}
+	}
+	public static function generateMap(length:Int):Array<Int> {
+		var map = new Array<Int>();
+		var i = 0;
+		var curPlatform = 15;
+		var random:Int;
+		var maxDiff = 150;
+		var minDiff = 50;
+		var diff = 0;
+
+		map.push(curPlatform);
+
+		while (i <= length) {
+			random = 15 + Math.round(Math.random() * (fullStageHeight/2- 15));
+			diff = random - map[map.length-1];
+			if (diff > maxDiff) {
+				curPlatform = map[map.length-1] + maxDiff;
+			} else if (Math.abs(diff) < minDiff && diff != 0) {
+				curPlatform = map[map.length-1];
+			} else {
+				curPlatform = random;
+			}
+			map.push(curPlatform);
+			i++;
+		}
+
+		return map;
 	}
 	public static function platfromHeightAt(x:Float):Int {
 		var index = Math.floor(x / platfromSize);
@@ -195,11 +259,19 @@ class Main extends Sprite
 		}
 	}
 	
+	private static function truncName(name:String):String {
+		if ( name.substr(name.length - 4) == "Ally" ) {	
+			return name.substr(0, name.length - 4);
+		} else {
+			return name;
+		}
+	}
+	
 	public function spawnUnit(monsterType:String,x:Float) {
 		
 		var newMonster = new Unit();				
 		newMonster.unitType = monsterType;
-		if ( newMonster.unitType == "dog" ) {
+		if (truncName(newMonster.unitType) == "dog" ) {
 			newMonster.sizeX = 80;
 			newMonster.sizeY = 80;
 			newMonster.movespeed = 6;
@@ -207,30 +279,80 @@ class Main extends Sprite
 			newMonster.dmg = 5;
 			newMonster.attackSpeed = 20;
 			newMonster.ranged = false;
-			newMonster.ai = aiSimpleFollow;
-			newMonster.hp = newMonster.hpMax;
-			//sprite
-			
-			newMonster.spriteBody1 = new TileSprite(layer, "evildog1");
-			newMonster.spriteBody2 = new TileSprite(layer, "evildog2");
-			newMonster.spriteBody3 = new TileSprite(layer, "evildog3");
-			newMonster.spriteLegs1 = new TileSprite(layer, "evildogLeg1");
-			newMonster.spriteLegs2 = new TileSprite(layer, "evildogLeg2");
-			newMonster.spriteLegsJump = new TileSprite(layer, "evildogLeg3");
-			//layer.addChild(sprite);
 		}
-		/*if ( newMonster.unitType == "default" ) {
-			newMonster.spriteDY = -1;
-			newMonster.shadow = new Bitmap(Assets.getBitmapData("img/enemy_melee_shadow.png"));
-			newMonster.animationBmp.push(new Bitmap(Assets.getBitmapData("img/enemy_melee_01.png")));
-			newMonster.animationBmp.push(new Bitmap(Assets.getBitmapData("img/enemy_melee_02.png")));
-			newMonster.animationBmp.push(new Bitmap(Assets.getBitmapData("img/enemy_melee_03.png")));
-		}*/
+		if ( truncName(newMonster.unitType) == "gun" ) {	
+			newMonster.sizeX = 100;
+			newMonster.sizeY = 160;
+			newMonster.movespeed = 5;
+			newMonster.hpMax = 20;
+			newMonster.dmg = 10;
+			newMonster.attackSpeed = 30;
+			newMonster.ranged = true;
+		}		
+		if (truncName(newMonster.unitType) == "handman" ) {
+			newMonster.sizeX = 200;
+			newMonster.sizeY = 140;
+			newMonster.movespeed = 4;
+			newMonster.hpMax = 50;
+			newMonster.dmg = 10;
+			newMonster.attackSpeed = 40;
+			newMonster.ranged = false;
+		}
+		if ( newMonster.unitType == "dogAlly" ) {
+			newMonster.infected = false;
+			newMonster.ai = aiAlly;
+			
+			newMonster.spriteBody1 = new TileSprite(layer, "dog1");
+			newMonster.spriteBody2 = new TileSprite(layer, "dog2");
+			newMonster.spriteBody3 = new TileSprite(layer, "dog3");
+			newMonster.spriteLegs1 = new TileSprite(layer, "dogLeg1");
+			newMonster.spriteLegs2 = new TileSprite(layer, "dogLeg2");
+			newMonster.spriteLegsJump = new TileSprite(layer, "dogLeg3");
+		}
+		if ( newMonster.unitType == "gunAlly" ) {
+			newMonster.infected = false;
+			newMonster.ai = aiAlly;
+			
+			newMonster.spriteBody1 = new TileSprite(layer, "gun1");
+			newMonster.spriteBody2 = new TileSprite(layer, "gun2");
+			newMonster.spriteBody3 = new TileSprite(layer, "gun3");
+			newMonster.spriteLegs1 = new TileSprite(layer, "gunLeg1");
+			newMonster.spriteLegs2 = new TileSprite(layer, "gunLeg2");
+			newMonster.spriteLegsJump = new TileSprite(layer, "gunLeg3");
+		}
+		
+		if ( newMonster.unitType == "handmanAlly" ) {
+			newMonster.infected = false;
+			newMonster.ai = aiAlly;
+			
+			newMonster.spriteBody1 = new TileSprite(layer, "handman1");
+			newMonster.spriteBody2 = new TileSprite(layer, "handman2");
+			newMonster.spriteBody3 = new TileSprite(layer, "handman3");
+			newMonster.spriteLegs1 = new TileSprite(layer, "handmanLeg1");
+			newMonster.spriteLegs2 = new TileSprite(layer, "handmanLeg2");
+			newMonster.spriteLegsJump = new TileSprite(layer, "handmanLeg3");
+		}
+		if ( newMonster.unitType.substr(newMonster.unitType.length - 4) != "Ally" ) {	
+			newMonster.infect();
+		}
+		newMonster.hp = newMonster.hpMax;
 		Main.addUnit(newMonster, x);
 	}
 	
 	public static function trackPlayerHp() {
 		hpBar.scaleX = (1 - player.hp / player.hpMax);
+	}
+	
+	
+	public static var projGun:ProjectileType;
+	static function initProjectiles() {
+		
+		projGun = new ProjectileType();
+		projGun.speed = 20.0;
+		projGun.dmg = 5;
+		projGun.hbRad = 21;
+		projGun.ttl = 120;
+		projGun.bmp = "img/gunbullet.png";
 	}
 	
 	/* SETUP */
@@ -303,7 +425,11 @@ class Main extends Sprite
 							if ( another.type == "unit" ) {
 								if ( !object.collizionGroup.exists(another) ) {
 									object.collizionGroup.set(another, framesPassed);
-									another.takeDamage(object.dmg);
+									if ( another.infected  || another == Main.player ) {	
+										another.takeDamage(object.dmg);
+									} else {
+										another.takeDamage(0);
+									}
 									if (object.destroyAfterHit)	object.destroy();
 								}
 							}
@@ -326,7 +452,7 @@ class Main extends Sprite
 	}
 	
 	function traceCamera() {
-		if ( player.x + field.x > fullStageWidth * 0.7 ) {
+		if ( player.x + field.x > fullStageWidth * 0.5 ) {
 			field.x -= Main.player.movespeed;			
 			if (field.x < -fieldWidthTotal+fullStageWidth ) field.x = -fieldWidthTotal+fullStageWidth;
 		}

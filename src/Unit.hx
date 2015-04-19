@@ -28,8 +28,7 @@ class Unit extends Collidable
 	public var spriteBody3:TileSprite;
 	public var spriteLegs1:TileSprite;
 	public var spriteLegs2:TileSprite;
-	public var spriteLegsJump:TileSprite;
-	public var infected:Bool;
+	public var spriteLegsJump:TileSprite;	
 	
 	//movement info
 	public var lastDirection:Int;
@@ -40,6 +39,9 @@ class Unit extends Collidable
 	public var bored:Bool;
 	public var aiDir:Int;
 	public var ai:AI;
+	public var lastDamagedTime:Int = 0;
+	public var lastJumpTime:Int = 0;
+	public var playerDetected:Bool = false;
 	
 	public function new() 
 	{
@@ -89,7 +91,7 @@ class Unit extends Collidable
 			dx = 0.9 * dx;
 		} else {
 			if ( ai != null) {
-				if ( dx != 0 ) {
+				if (( dx != 0 ) && ( Main.framesPassed - lastJumpTime > 60)) {
 					jump();
 				}
 			}
@@ -139,6 +141,9 @@ class Unit extends Collidable
 					setLegsTo(1);
 				}
 			}
+			if (!isMoving) {
+				setLegsTo(1);
+			}
 		}
 		positionSprites();	
 	}
@@ -152,6 +157,12 @@ class Unit extends Collidable
 			} else if ( lastDirection > 0 ) {
 				currentSprite.mirror = 1;
 			}
+			if ( Main.framesPassed - lastDamagedTime < 1 ) {
+				currentSprite.x += 2;
+			}
+			else if ( Main.framesPassed - lastDamagedTime < 2 ) {
+				currentSprite.x += 1;
+			}
 		}
 		if ( currentSpriteLegs != null ) {
 			currentSpriteLegs.x = this.x;// + currentSprite.width / 2;
@@ -160,6 +171,12 @@ class Unit extends Collidable
 				currentSpriteLegs.mirror = 0;
 			} else if ( lastDirection > 0 ) {
 				currentSpriteLegs.mirror = 1;
+			}
+			if ( Main.framesPassed - lastDamagedTime < 1 ) {
+				currentSpriteLegs.y += 2;
+			}
+			else if ( Main.framesPassed - lastDamagedTime < 2 ) {
+				currentSpriteLegs.y += 1;
 			}
 		}		
 	}
@@ -198,6 +215,7 @@ class Unit extends Collidable
 	
 	public function jump() {
 		//if ( Math.abs((Main.fullStageHeight - Main.platfromHeightAt(x)) - (this.y+this.sizeY/2)) < 5 ) {
+		this.lastJumpTime = Main.framesPassed;
 		if (!isFlying()) {
 			this.dy = -50;
 		}
@@ -273,32 +291,34 @@ class Unit extends Collidable
 			} else {
 				setAnimTo(1);
 			}
+			var dir:Int = (Math.abs(angle) < Math.PI / 2) ? 1 : -1; 
 			if ( charge >= 15 ) {
 				if ( this == Main.player ) {
 					Main.playerShootOrder =  false;
 				}
 				if ( ranged ) {
-					//var projType:ProjectileType = null;
-					//if ( unitType == "default" ) {
-						//projType = Main.projMeeleCrescent;
-					//}
-					//if ( unitType == "ranged" ) {
-						//projType = Main.projRangedSmall;
-					//}
-					//if ( unitType == "biggun" ) {
-						//projType = Main.projRangedBig;
-					//}
-					//var proj:Projectile = new Projectile(projType);
-					//proj.setAngle(angle);
-					//Main.field.addChild(proj);
-					//proj.x = this.x + this.sizeX / 2;
-					//proj.y = this.y + this.sizeY / 2;
-					//Main.collidables.push(proj);
-					//proj.source = this;
-				} else {					
-					var dir:Int = (Math.abs(angle) < Math.PI / 2) ? 1 : -1; 
+					var projType:ProjectileType = null;
+					if ( unitType == "gun" ) {
+						projType = Main.projGun;
+					}
+					var proj:Projectile = new Projectile(projType);
+					proj.setAngle(angle);
+					Main.field.addChild(proj);
+					proj.x = this.x;
+					proj.y = this.y;
+					if ( unitType == "gun" ) {
+						proj.x += lastDirection * 100;
+						proj.y += -35;
+					}
+					Main.collidables.push(proj);
+					proj.source = this;
+					proj.infected = this.infected;
+				} else {										
 					if ( unitType == "dog" ) {
 						strike(dir, 100, 100);
+					}					
+					if ( unitType == "handman" ) {
+						strike(dir, 200, 200);
 					}
 					if ( this == Main.player ) {
 						strike(dir, 100, 200);
@@ -307,6 +327,10 @@ class Unit extends Collidable
 			cooldown = attackSpeed;
 			charge = 1;			
 			//setAnimTo(1);
+			}			
+			
+			if ( !isMoving ) {
+				turnTo(angle);
 			}
 		}
 	}
@@ -328,10 +352,15 @@ class Unit extends Collidable
 			Main.field.addChild(particale);										
 		}
 		for ( another in Main.collidables ) {
-			if (( this != another ) && ( another.type == "unit" )) {
+			if (( this != another ) && ( another.type == "unit" )
+				&& (this.infected != another.infected)) {
 				if (( Math.abs(another.x - strikeAreaX) < another.sizeX / 2 + strikeAreaWidth / 2)
 					&& ( Math.abs(another.y - strikeAreaY) < another.sizeY / 2 + strikeAreaHeigth / 2)) {
-					another.takeDamage(this.dmg);
+					if ( another.infected  || another == Main.player ) {	
+						another.takeDamage(this.dmg, this);					
+					} else {
+						another.takeDamage(0);
+					}
 					trace(this.dmg);
 				}
 			}
@@ -343,17 +372,30 @@ class Unit extends Collidable
 	}
 	
 	override
-	public function takeDamage(dmg:Int) {
+	public function takeDamage(dmg:Int, source:Unit = null) {
+		this.lastDamagedTime = Main.framesPassed;
 		if ( dmg > 0 ) {
 			hp -= dmg;			
 			if ( this == Main.player ) {
 				Main.trackPlayerHp();
 				//var soundfx1 = Assets.getSound("audio/player_hit.wav");
 				//soundfx1.play();
+			} else {
+				if ( !isMoving ) {
+					turnTo(Math.atan2(source.y - this.y, source.x - this.x));
+				}
 			}
 			if ( hp <= 0 ) {
 				kill();
-			}
+			}			
+		}
+	}
+	
+	private function turnTo(angle:Float) {
+		var dir:Int = (Math.abs(angle) < Math.PI / 2) ? 1 : -1; 
+		if ( lastDirection != dir ) {
+			lastDirection = dir;
+			positionSprites();
 		}
 	}
 	
@@ -367,6 +409,47 @@ class Unit extends Collidable
 			hp = hpMax;
 		}
 		Main.trackPlayerHp();
+	}
+	
+	public function infect() {
+		if ( unitType.substr(unitType.length - 4) == "Ally" ) {			
+			if ( spriteBody1 != null )	Main.layer.removeChild(spriteBody1);
+			if ( spriteBody2 != null )	Main.layer.removeChild(spriteBody2);
+			if ( spriteBody3 != null )	Main.layer.removeChild(spriteBody3);
+			if ( spriteLegs1 != null )	Main.layer.removeChild(spriteLegs1);
+			if ( spriteLegs2 != null )	Main.layer.removeChild(spriteLegs2);
+			if ( spriteLegsJump != null )	Main.layer.removeChild(spriteLegsJump);
+			unitType = unitType.substr(0, unitType.length - 4);			
+		}
+		if ( unitType == "dog" ) {			
+			spriteBody1 = new TileSprite(Main.layer, "evildog1");
+			spriteBody2 = new TileSprite(Main.layer, "evildog2");
+			spriteBody3 = new TileSprite(Main.layer, "evildog3");
+			spriteLegs1 = new TileSprite(Main.layer, "evildogLeg1");
+			spriteLegs2 = new TileSprite(Main.layer, "evildogLeg2");
+			spriteLegsJump = new TileSprite(Main.layer, "evildogLeg3");
+			ai = Main.aiSimpleFollow;
+		}
+		if ( unitType == "gun" ) {			
+			spriteBody1 = new TileSprite(Main.layer, "evilgun1");
+			spriteBody2 = new TileSprite(Main.layer, "evilgun2");
+			spriteBody3 = new TileSprite(Main.layer, "evilgun3");
+			spriteLegs1 = new TileSprite(Main.layer, "gunLeg1");
+			spriteLegs2 = new TileSprite(Main.layer, "gunLeg2");
+			spriteLegsJump = new TileSprite(Main.layer, "gunLeg3");
+			ai = Main.aiSimpleRanged;
+		}		
+		if ( unitType == "handman" ) {			
+			spriteBody1 = new TileSprite(Main.layer, "evilhandman1");
+			spriteBody2 = new TileSprite(Main.layer, "evilhandman2");
+			spriteBody3 = new TileSprite(Main.layer, "evilhandman3");
+			spriteLegs1 = new TileSprite(Main.layer, "handmanLeg1");
+			spriteLegs2 = new TileSprite(Main.layer, "handmanLeg2");
+			spriteLegsJump = new TileSprite(Main.layer, "handmanLeg3");
+			ai = Main.aiSimpleRanged;
+		}
+		infected = true;
+		//positionSprites();
 	}
 	
 	public function kill() {
