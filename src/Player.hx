@@ -230,7 +230,7 @@ class Player
 		Main.layer.addChildAt(highlightSpriteHandman, 0);
 		highlightUnitToSprite.set("handman", highlightSpriteHandman);
         
-        redHandSprite = new TileSprite(Main.layer, "framehp");
+        redHandSprite = new TileSprite(Main.layer, "redhand");
         registerSprite(redHandSprite);
 	}
     
