@@ -159,8 +159,8 @@ class Unit extends Collidable
 			}
 		}
 		positionSprites();	
-        if ( noBody ) {
-            takeDamage(1);
+        if ( noBody && (Main.framesPassed % 30 == 0) ) {
+            takeDamage(Math.ceil(hpMax/20));
         }
 	}
 	
