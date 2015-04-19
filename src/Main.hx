@@ -513,7 +513,7 @@ class Main extends Sprite
 		}*/
 		var playerDead = player.hp <= 0;
 		if (playerDead) {
-			togglePause(true);
+			setPause(true);
 		}
 
 		if (pause) {
@@ -643,7 +643,9 @@ class Main extends Sprite
 		}
 		if ( e.keyCode == 80 ) {
 			//P
-			togglePause();
+            if ( Main.player.hp > 0 ) {
+			    togglePause();
+            }
 		}
 		if ( e.keyCode == 84 ) {
 			//T
@@ -659,18 +661,19 @@ class Main extends Sprite
 		}
 	}
 
-	function togglePause(value:Bool = null):Void {
-		if (value != null) {
-			pause = value;
-		} else {
-			pause = !pause;
-		}
-		if (pause) {
+	function togglePause():Void {		
+        pause = !pause;
+		setPause(pause);
+	}
+    
+    function setPause(value:Bool) {        
+        pause = value;
+		if (value) {
 			addChild(pausePopup);
 		} else {
 			removeChild(pausePopup);			
 		}
-	}
+    }
 	
 	function onUp(e) {
 		keymap.set(e.keyCode, false);

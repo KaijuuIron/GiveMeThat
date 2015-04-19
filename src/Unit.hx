@@ -85,7 +85,7 @@ class Unit extends Collidable
 	public function tick() {		
 		//graaavity
 		if ( Main.fullStageHeight - Main.platfromHeightAt(this.x) > this.y + this.sizeY / 2) {
-			dy += 3;
+			dy += 2;
 		}
 		if ( charge > 0 ) {
 			chargeAdd( -1);			
@@ -262,7 +262,7 @@ class Unit extends Collidable
 		//if ( Math.abs((Main.fullStageHeight - Main.platfromHeightAt(x)) - (this.y+this.sizeY/2)) < 5 ) {
 		this.lastJumpTime = Main.framesPassed;
 		if (!isFlying()) {
-			this.dy = -50;
+			this.dy = -35;
 		}
 	}
 	
