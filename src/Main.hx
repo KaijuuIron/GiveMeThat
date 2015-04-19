@@ -125,7 +125,7 @@ class Main extends Sprite
 		player.sizeX = 80;
 		player.sizeY = 80;
 		player.movespeed = 8;
-		player.hpMax = 100;
+		player.hpMax = 1000;
 		player.hp = player.hpMax;
 		player.dmg = playerBaseDmg;
 		player.ranged = false;		
@@ -273,7 +273,7 @@ class Main extends Sprite
 		newMonster.unitType = monsterType;
 		if (truncName(newMonster.unitType) == "dog" ) {
 			newMonster.sizeX = 80;
-			newMonster.sizeY = 80;
+			newMonster.sizeY = 70;
 			newMonster.movespeed = 6;
 			newMonster.hpMax = 10;
 			newMonster.dmg = 5;
@@ -281,8 +281,8 @@ class Main extends Sprite
 			newMonster.ranged = false;
 		}
 		if ( truncName(newMonster.unitType) == "gun" ) {	
-			newMonster.sizeX = 100;
-			newMonster.sizeY = 160;
+			newMonster.sizeX = 90;
+			newMonster.sizeY = 150;
 			newMonster.movespeed = 5;
 			newMonster.hpMax = 20;
 			newMonster.dmg = 10;
@@ -290,8 +290,8 @@ class Main extends Sprite
 			newMonster.ranged = true;
 		}		
 		if (truncName(newMonster.unitType) == "handman" ) {
-			newMonster.sizeX = 200;
-			newMonster.sizeY = 140;
+			newMonster.sizeX = 170;
+			newMonster.sizeY = 120;
 			newMonster.movespeed = 4;
 			newMonster.hpMax = 50;
 			newMonster.dmg = 10;

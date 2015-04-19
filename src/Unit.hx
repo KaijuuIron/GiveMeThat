@@ -221,7 +221,7 @@ class Unit extends Collidable
 			Main.layer.addChild(spriteLegsJump);
 			spriteLegsJump.visible = false;
 		}
-		if ( false ) {
+	    if ( false ) {
 			graphics.beginFill(0xffffff);
 			graphics.drawRect(-this.sizeX/2,-this.sizeY/2,this.sizeX,this.sizeY);
 			graphics.endFill();
