@@ -295,7 +295,7 @@ class Main extends Sprite
 		var i = 0;
 		var curPlatform = 15;
 		var random:Int;
-		var maxDiff = 150;
+		var maxDiff = 120;
 		var minDiff = 50;
 		var diff = 0;
 
