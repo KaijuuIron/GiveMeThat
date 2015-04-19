@@ -67,6 +67,7 @@ class Unit extends Collidable
 		spriteBody1 = null;
 		spriteBody2 = null;
 		spriteBody3 = null;
+        lastDirection = (this == Main.player) ? -1 : 1;
 	}
 	
 	public static function timePassedFrom(time:Int):Int {
@@ -185,6 +186,9 @@ class Unit extends Collidable
 	}
 	
 	private function mirrorTo(newMirror:Int) {
+        if ( this == Main.player ) {
+            newMirror == 0 ? newMirror = 1 : newMirror = 0;
+        }
 		if ( lastMirrorState == newMirror )	return;
 		if ( timePassedFrom(lastMirrorChange) < 30 )	return;
 		lastMirrorState = newMirror;
@@ -198,18 +202,20 @@ class Unit extends Collidable
 	}
 	
 	public function draw() {
-		graphics.clear();		
-		if ( spriteBody1 != null ) {
-			Main.layer.addChild(spriteBody1);
-		}
-		if ( spriteBody2 != null ) {
-			Main.layer.addChild(spriteBody2);
-			spriteBody2.visible = false;
-		}
-		if ( spriteBody3 != null ) {
-			Main.layer.addChild(spriteBody3);
-			spriteBody3.visible = false;
-		}
+		graphics.clear();
+        if ( this != Main.player) {
+            if ( spriteBody1 != null ) {
+                Main.layer.addChild(spriteBody1);
+            }
+            if ( spriteBody2 != null ) {
+                Main.layer.addChild(spriteBody2);
+                spriteBody2.visible = false;
+            }
+            if ( spriteBody3 != null ) {
+                Main.layer.addChild(spriteBody3);
+                spriteBody3.visible = false;
+            }
+        }
 		if ( spriteLegs1 != null ) {
 			Main.layer.addChild(spriteLegs1);
 		}
@@ -221,6 +227,19 @@ class Unit extends Collidable
 			Main.layer.addChild(spriteLegsJump);
 			spriteLegsJump.visible = false;
 		}
+        if ( this == Main.player) {
+            if ( spriteBody1 != null ) {
+                Main.layer.addChild(spriteBody1);
+            }
+            if ( spriteBody2 != null ) {
+                Main.layer.addChild(spriteBody2);
+                spriteBody2.visible = false;
+            }
+            if ( spriteBody3 != null ) {
+                Main.layer.addChild(spriteBody3);
+                spriteBody3.visible = false;
+            }
+        }
 	    if ( false ) {
 			graphics.beginFill(0xffffff);
 			graphics.drawRect(-this.sizeX/2,-this.sizeY/2,this.sizeX,this.sizeY);
@@ -300,9 +319,9 @@ class Unit extends Collidable
 	public function shoot(angle:Float) {			
 		if ( cooldown <= 0 ) {
 			chargeAdd(2);
-			if ( charge >= 10 ) {
+			if ( charge >= 9 ) {
 				setAnimTo(3);
-			} else if ( charge >= 5 ) {
+			} else if ( charge >= 3 ) {
 				setAnimTo(2);
 			} else {
 				setAnimTo(1);
@@ -372,8 +391,8 @@ class Unit extends Collidable
 				&& (this.infected != another.infected)) {
 				if (( Math.abs(another.x - strikeAreaX) < another.sizeX / 2 + strikeAreaWidth / 2)
 					&& ( Math.abs(another.y - strikeAreaY) < another.sizeY / 2 + strikeAreaHeigth / 2)) {
-					if ( another.infected  || another == Main.player ) {	
-						another.takeDamage(this.dmg, this);					
+					if ( another.infected  || another == Main.player ) {
+						another.takeDamage(this.dmg, this);
 					} else {
 						another.takeDamage(0);
 					}
@@ -459,9 +478,9 @@ class Unit extends Collidable
 			spriteBody1 = new TileSprite(Main.layer, "evilhandman1");
 			spriteBody2 = new TileSprite(Main.layer, "evilhandman2");
 			spriteBody3 = new TileSprite(Main.layer, "evilhandman3");
-			spriteLegs1 = new TileSprite(Main.layer, "handmanLeg1");
-			spriteLegs2 = new TileSprite(Main.layer, "handmanLeg2");
-			spriteLegsJump = new TileSprite(Main.layer, "handmanLeg3");
+			spriteLegs1 = new TileSprite(Main.layer, "evilhandmanLeg1");
+			spriteLegs2 = new TileSprite(Main.layer, "evilhandmanLeg2");
+			spriteLegsJump = new TileSprite(Main.layer, "evilhandmanLeg3");
 			ai = Main.aiSimpleFollow;
 		}
 		infected = true;
@@ -546,7 +565,7 @@ class Unit extends Collidable
 	//}
 	//
 	public function setAnimTo(anim:Int) {
-		if ( animStateLegs == anim ) {
+		if ( animState == anim ) {
 			return;
 		}
 		animState = anim;			

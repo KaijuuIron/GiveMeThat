@@ -130,9 +130,9 @@ class Main extends Sprite
 		player.dmg = playerBaseDmg;
 		player.ranged = false;		
 		player.infected = false;
-		player.spriteLegs1 = new TileSprite(layer, "dogLeg1");
-		player.spriteLegs2 = new TileSprite(layer, "dogLeg2");
-		player.spriteLegsJump = new TileSprite(layer, "dogLeg3");
+		player.spriteLegs1 = new TileSprite(layer, "heroleg1");
+		player.spriteLegs2 = new TileSprite(layer, "heroleg2");
+		player.spriteLegsJump = new TileSprite(layer, "heroleg3");
 		Player.init();
 		Player.dropWeapon();
 		addUnit(player, (0 + 0.5) * platfromSize);
@@ -151,6 +151,14 @@ class Main extends Sprite
 
 	function initSheet(sheet:TilesheetEx) {
 		//addDefToSheet(sheet, "back", "img/bg0.png");
+        addDefToSheet(sheet, "herobasic1", "img/herobody1.png");
+        addDefToSheet(sheet, "herobasic2", "img/herobody2.png");
+        addDefToSheet(sheet, "herobasic3", "img/herobody3.png");
+        addDefToSheet(sheet, "heroleg1", "img/herolegs1.png");
+        addDefToSheet(sheet, "heroleg2", "img/herolegs2.png");
+        addDefToSheet(sheet, "heroleg3", "img/herolegs3.png");
+        
+        
 		addDefToSheet(sheet, "dog1", "img/dogbody1.png");
 		addDefToSheet(sheet, "dog2", "img/evildogbody2.png");
 		addDefToSheet(sheet, "dog3", "img/evildogbody3.png");		
@@ -164,6 +172,7 @@ class Main extends Sprite
 		addDefToSheet(sheet, "evildogLeg2", "img/doglegs2.png");
 		addDefToSheet(sheet, "evildogLeg3", "img/doglegs3.png");
 		addDefToSheet(sheet, "evildoglight", "img/evildoglight.png");
+        
 		addDefToSheet(sheet, "gun1", "img/gunbody1.png");
 		addDefToSheet(sheet, "gun2", "img/evilgunbody2.png");
 		addDefToSheet(sheet, "gun3", "img/evilgunbody3.png");
@@ -183,7 +192,10 @@ class Main extends Sprite
 		addDefToSheet(sheet, "evilhandman3", "img/evilhandmanlbody3.png");
 		addDefToSheet(sheet, "handmanLeg1", "img/handmanlegs1.png");
 		addDefToSheet(sheet, "handmanLeg2", "img/handmanlegs2.png");
-		addDefToSheet(sheet, "handmanLeg3", "img/handmanlegs3.png");
+		addDefToSheet(sheet, "handmanLeg3", "img/handmanlegs3.png");        
+		addDefToSheet(sheet, "evilhandmanLeg1", "img/evilhandmanlegs1.png");
+		addDefToSheet(sheet, "evilhandmanLeg2", "img/evilhandmanlegs2.png");
+		addDefToSheet(sheet, "evilhandmanLeg3", "img/evilhandmanlegs3.png");
 		addDefToSheet(sheet, "evilhandmanlight", "img/evilhandmanlight.png");
 	}
 	

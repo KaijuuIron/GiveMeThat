@@ -111,9 +111,9 @@ class Player
 	
 	public static function init() {
 		player = Main.player;
-		bodySpriteBasic1 = new TileSprite(Main.layer, "dog1");
-		bodySpriteBasic2 = new TileSprite(Main.layer, "dog2");
-		bodySpriteBasic3 = new TileSprite(Main.layer, "dog3");
+		bodySpriteBasic1 = new TileSprite(Main.layer, "herobasic1");
+		bodySpriteBasic2 = new TileSprite(Main.layer, "herobasic2");
+		bodySpriteBasic3 = new TileSprite(Main.layer, "herobasic3");
 		
 		
 		highlightSpriteDog = new TileSprite(Main.layer, "evildoglight");
