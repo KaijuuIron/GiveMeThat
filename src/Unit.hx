@@ -41,7 +41,9 @@ class Unit extends Collidable
 	public var ai:AI;
 	public var lastDamagedTime:Int = 0;
 	public var lastJumpTime:Int = 0;
+	public var lastMirrorChange:Int = 0;
 	public var playerDetected:Bool = false;
+	public var lastMirrorState:Int = 0;
 	
 	public function new() 
 	{
@@ -65,10 +67,17 @@ class Unit extends Collidable
 		spriteBody1 = null;
 		spriteBody2 = null;
 		spriteBody3 = null;
+        lastDirection = (this == Main.player) ? -1 : 1;
+	}
+	
+	public static function timePassedFrom(time:Int):Int {
+		return Main.framesPassed - time;
 	}
 	
 	public function moveDir(dir:Int) {
-		dx = movespeed * ((dir > 0) ? 1 : -1);
+		if(!isFlying() || (timePassedFrom(lastJumpTime) < 30 )) {
+			dx = movespeed * ((dir > 0) ? 1 : -1);
+		}
 		//dy = movespeed * Math.sin(angle);
 	}
 	
@@ -91,7 +100,7 @@ class Unit extends Collidable
 			dx = 0.9 * dx;
 		} else {
 			if ( ai != null) {
-				if (( dx != 0 ) && ( Main.framesPassed - lastJumpTime > 60)) {
+				if (( dx != 0 ) && ( timePassedFrom(lastJumpTime) > 60)) {
 					jump();
 				}
 			}
@@ -152,48 +161,61 @@ class Unit extends Collidable
 		if ( currentSprite != null ) {
 			currentSprite.x = this.x;// + currentSprite.width / 2;
 			currentSprite.y = this.y - currentSprite.height / 2 + this.sizeY / 2;
-			if ( lastDirection < 0 ) {
-				currentSprite.mirror = 0;
-			} else if ( lastDirection > 0 ) {
-				currentSprite.mirror = 1;
-			}
-			if ( Main.framesPassed - lastDamagedTime < 1 ) {
+			if ( timePassedFrom(lastDamagedTime) < 1 ) {
 				currentSprite.x += 2;
 			}
-			else if ( Main.framesPassed - lastDamagedTime < 2 ) {
+			else if ( timePassedFrom(lastDamagedTime) < 2 ) {
 				currentSprite.x += 1;
 			}
 		}
 		if ( currentSpriteLegs != null ) {
 			currentSpriteLegs.x = this.x;// + currentSprite.width / 2;
 			currentSpriteLegs.y = this.y - currentSpriteLegs.height / 2 + this.sizeY / 2;
-			if ( lastDirection < 0 ) {
-				currentSpriteLegs.mirror = 0;
-			} else if ( lastDirection > 0 ) {
-				currentSpriteLegs.mirror = 1;
-			}
-			if ( Main.framesPassed - lastDamagedTime < 1 ) {
+			if (timePassedFrom(lastDamagedTime) < 1 ) {
 				currentSpriteLegs.y += 2;
 			}
-			else if ( Main.framesPassed - lastDamagedTime < 2 ) {
+			else if ( timePassedFrom(lastDamagedTime) < 2 ) {
 				currentSpriteLegs.y += 1;
 			}
-		}		
+		}	
+		if ( lastDirection <= 0 ) {
+			mirrorTo(0);
+		} else {
+			mirrorTo(1);
+		}
+	}
+	
+	private function mirrorTo(newMirror:Int) {
+        if ( this == Main.player ) {
+            newMirror == 0 ? newMirror = 1 : newMirror = 0;
+        }
+		if ( lastMirrorState == newMirror )	return;
+		if ( timePassedFrom(lastMirrorChange) < 30 )	return;
+		lastMirrorState = newMirror;
+		lastMirrorChange = Main.framesPassed;
+		if ( spriteBody1 != null ) spriteBody1.mirror = newMirror;
+		if ( spriteBody2 != null ) spriteBody2.mirror = newMirror;
+		if ( spriteBody3 != null ) spriteBody3.mirror = newMirror;
+		if ( spriteLegs1 != null ) spriteLegs1.mirror = newMirror;
+		if ( spriteLegs2 != null ) spriteLegs2.mirror = newMirror;
+		if ( spriteLegsJump != null ) spriteLegsJump.mirror = newMirror;
 	}
 	
 	public function draw() {
-		graphics.clear();		
-		if ( spriteBody1 != null ) {
-			Main.layer.addChild(spriteBody1);
-		}
-		if ( spriteBody2 != null ) {
-			Main.layer.addChild(spriteBody2);
-			spriteBody2.visible = false;
-		}
-		if ( spriteBody3 != null ) {
-			Main.layer.addChild(spriteBody3);
-			spriteBody3.visible = false;
-		}
+		graphics.clear();
+        if ( this != Main.player) {
+            if ( spriteBody1 != null ) {
+                Main.layer.addChild(spriteBody1);
+            }
+            if ( spriteBody2 != null ) {
+                Main.layer.addChild(spriteBody2);
+                spriteBody2.visible = false;
+            }
+            if ( spriteBody3 != null ) {
+                Main.layer.addChild(spriteBody3);
+                spriteBody3.visible = false;
+            }
+        }
 		if ( spriteLegs1 != null ) {
 			Main.layer.addChild(spriteLegs1);
 		}
@@ -205,7 +227,20 @@ class Unit extends Collidable
 			Main.layer.addChild(spriteLegsJump);
 			spriteLegsJump.visible = false;
 		}
-		if ( false ) {
+        if ( this == Main.player) {
+            if ( spriteBody1 != null ) {
+                Main.layer.addChild(spriteBody1);
+            }
+            if ( spriteBody2 != null ) {
+                Main.layer.addChild(spriteBody2);
+                spriteBody2.visible = false;
+            }
+            if ( spriteBody3 != null ) {
+                Main.layer.addChild(spriteBody3);
+                spriteBody3.visible = false;
+            }
+        }
+	    if ( false ) {
 			graphics.beginFill(0xffffff);
 			graphics.drawRect(-this.sizeX/2,-this.sizeY/2,this.sizeX,this.sizeY);
 			graphics.endFill();
@@ -250,7 +285,7 @@ class Unit extends Collidable
 	}
 	
 	public function canMoveToY(y:Float):Bool {
-		if ( y - sizeY/2 < 0 ) return false;
+		//if ( y - sizeY/2 < 0 ) return false;
 		if ( y + sizeY/2 > Main.fullStageHeight - Main.platfromHeightAt(this.x) )	return false;
 		//if ( y + sizeY/2 > Main.fullStageHeight - Main.platfromHeightAt(this.x+this.sizeX/2) )	return false;
 		//if ( y + sizeY/2 > Main.fullStageHeight - Main.platfromHeightAt(this.x-this.sizeX/2) )	return false;
@@ -284,9 +319,9 @@ class Unit extends Collidable
 	public function shoot(angle:Float) {			
 		if ( cooldown <= 0 ) {
 			chargeAdd(2);
-			if ( charge >= 10 ) {
+			if ( charge >= 9 ) {
 				setAnimTo(3);
-			} else if ( charge >= 5 ) {
+			} else if ( charge >= 3 ) {
 				setAnimTo(2);
 			} else {
 				setAnimTo(1);
@@ -356,8 +391,8 @@ class Unit extends Collidable
 				&& (this.infected != another.infected)) {
 				if (( Math.abs(another.x - strikeAreaX) < another.sizeX / 2 + strikeAreaWidth / 2)
 					&& ( Math.abs(another.y - strikeAreaY) < another.sizeY / 2 + strikeAreaHeigth / 2)) {
-					if ( another.infected  || another == Main.player ) {	
-						another.takeDamage(this.dmg, this);					
+					if ( another.infected  || another == Main.player ) {
+						another.takeDamage(this.dmg, this);
 					} else {
 						another.takeDamage(0);
 					}
@@ -443,10 +478,10 @@ class Unit extends Collidable
 			spriteBody1 = new TileSprite(Main.layer, "evilhandman1");
 			spriteBody2 = new TileSprite(Main.layer, "evilhandman2");
 			spriteBody3 = new TileSprite(Main.layer, "evilhandman3");
-			spriteLegs1 = new TileSprite(Main.layer, "handmanLeg1");
-			spriteLegs2 = new TileSprite(Main.layer, "handmanLeg2");
-			spriteLegsJump = new TileSprite(Main.layer, "handmanLeg3");
-			ai = Main.aiSimpleRanged;
+			spriteLegs1 = new TileSprite(Main.layer, "evilhandmanLeg1");
+			spriteLegs2 = new TileSprite(Main.layer, "evilhandmanLeg2");
+			spriteLegsJump = new TileSprite(Main.layer, "evilhandmanLeg3");
+			ai = Main.aiSimpleFollow;
 		}
 		infected = true;
 		//positionSprites();
@@ -530,7 +565,7 @@ class Unit extends Collidable
 	//}
 	//
 	public function setAnimTo(anim:Int) {
-		if ( animStateLegs == anim ) {
+		if ( animState == anim ) {
 			return;
 		}
 		animState = anim;			

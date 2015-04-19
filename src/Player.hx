@@ -33,23 +33,32 @@ class Player
 	}
 	
 	public static function swapWeapon(next:String) {
-		trace("dog!");
+		trace(next+"!");
 	}
 	
 	public static function attemptGrab():Bool {
 		if (( highlightType == "unit" ) && (player.distanceXBetween(highlightedUnit) <= grabRange)) {
-			if ( highlightedUnit.unitType == "dog" ) {
-				highlightedUnit.kill();
-				swapWeapon("dog");
-				return true;
+			if ( grabbable(highlightedUnit) ) {
+				if ( highlightedUnit.unitType == "dog" ) {
+					highlightedUnit.kill();
+					swapWeapon("dog");
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 	
+	private static function grabbable(unit:Unit):Bool {
+		if (unit.unitType == "dog")	return true;
+		if (unit.unitType == "gun")	return true;
+		if (unit.unitType == "handman")	return (unit.hp/unit.hpMax < 0.5);
+		return false;
+	}
+	
 	public static function updateGrabHighlight() {
 		for ( enemy in Main.enemies ) {
-			if (( enemy.unitType == "dog" ) || (enemy.unitType == "gun") || (enemy.unitType == "handman"))  {
+			if (grabbable(enemy))  {
 				if ( player.distanceXBetween(enemy) < grabRange ) {
 					if(!sameHighlight(enemy))	highlightRemove();
 					highlightUnit(enemy);
@@ -67,7 +76,7 @@ class Player
 	
 	public static function highlightPosUpdate() {
 		if ( highlightType == "unit" ) {
-			if (( highlightedUnit.unitType == "dog" ) || (highlightedUnit.unitType == "gun") || (highlightedUnit.unitType == "handman")) {
+			if (true || ( highlightedUnit.unitType == "dog" ) || (highlightedUnit.unitType == "gun") || (highlightedUnit.unitType == "handman")) {
 				highlightUnitToSprite.get(highlightedUnit.unitType).x = highlightedUnit.currentSprite.x;
 				highlightUnitToSprite.get(highlightedUnit.unitType).y = highlightedUnit.currentSprite.y;
 				highlightUnitToSprite.get(highlightedUnit.unitType).mirror = highlightedUnit.currentSprite.mirror;
@@ -102,9 +111,9 @@ class Player
 	
 	public static function init() {
 		player = Main.player;
-		bodySpriteBasic1 = new TileSprite(Main.layer, "dog1");
-		bodySpriteBasic2 = new TileSprite(Main.layer, "dog2");
-		bodySpriteBasic3 = new TileSprite(Main.layer, "dog3");
+		bodySpriteBasic1 = new TileSprite(Main.layer, "herobasic1");
+		bodySpriteBasic2 = new TileSprite(Main.layer, "herobasic2");
+		bodySpriteBasic3 = new TileSprite(Main.layer, "herobasic3");
 		
 		
 		highlightSpriteDog = new TileSprite(Main.layer, "evildoglight");
