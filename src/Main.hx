@@ -43,7 +43,7 @@ class Main extends Sprite
 	public static var particles:List<ExpandingParticle> = new List<ExpandingParticle>();
 	
 	public static var platfromSize:Int = 320;
-	public static var stageLength:Int = 100;
+	public static var stageLength:Int = 50;
 	
 	static var globalFilter:Sprite;
 	static var hpBar:Sprite;
@@ -214,12 +214,21 @@ class Main extends Sprite
 		var curPlatform = 15;
 		var random:Int;
 		var maxDiff = 150;
+		var minDiff = 50;
+		var diff = 0;
 
 		map.push(curPlatform);
 
 		while (i <= length) {
-			random = 15 + Math.round(Math.random() * (fullStageHeight - 150 - 15));
-			curPlatform = (random - map[map.length-1] > maxDiff) ? map[map.length-1] + maxDiff : random;
+			random = 15 + Math.round(Math.random() * (fullStageHeight/2- 15));
+			diff = random - map[map.length-1];
+			if (diff > maxDiff) {
+				curPlatform = map[map.length-1] + maxDiff;
+			} else if (Math.abs(diff) < minDiff && diff != 0) {
+				curPlatform = map[map.length-1];
+			} else {
+				curPlatform = random;
+			}
 			map.push(curPlatform);
 			i++;
 		}
