@@ -196,6 +196,8 @@ class Main extends Sprite
 		stage.addEventListener(KeyboardEvent.KEY_UP, onUp);
 
 		togglePause();
+        //var soundfx1 = Assets.getSound("audio/lose_win.wav");
+			    //soundfx1.play();
 		var soundfx1 = Assets.getSound("audio/bg_music.mp3");
 	    soundfx1.play();
 	}
@@ -522,11 +524,11 @@ class Main extends Sprite
             if (!doOnce) {
 			if (playerDead) {
 				addChild(losePopup);                
-                //var soundfx1 = Assets.getSound("audio/LOSE-WIN.mp3");
+                //var soundfx1 = Assets.getSound("audio/LOSE-WIN.wav");
 			    //soundfx1.play();
 			} else if(playerWon) {
 				addChild(winPopup);                
-                //var soundfx1 = Assets.getSound("audio/LOSE-WIN.mp3");
+                //var soundfx1 = Assets.getSound("audio/LOSE-WIN.wav");
 			    //soundfx1.play();
 			}
             doOnce = true;
