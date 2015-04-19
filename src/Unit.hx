@@ -384,8 +384,18 @@ class Unit extends Collidable
 						if (strike(dir, Player.strikeAreaX, Player.strikeAreaY)) {
                             if (Player.playerWeapon == "fists" ) {
                                 this.takeDamage(1);
+                                var soundfx1 = Assets.getSound("audio/hit_hin_on_hero.mp3");
+				                soundfx1.play();
                             }
                             Player.useAttackCharge();
+                            if (Player.playerWeapon == "dog" ) {
+                                var soundfx1 = Assets.getSound("audio/hit_hin_on_hero.mp3");
+				                soundfx1.play();
+                            }
+                            if (Player.playerWeapon == "hand" ) {
+                                var soundfx1 = Assets.getSound("audio/hit_handman.mp3");
+				                soundfx1.play();
+                            }
                         }
 					}
 				}
@@ -450,8 +460,17 @@ class Unit extends Collidable
 			hp -= dmg;			
 			if ( this == Main.player ) {
 				Main.trackPlayerHp();
-				//var soundfx1 = Assets.getSound("audio/player_hit.wav");
-				//soundfx1.play();
+                var soundfx1 = null;
+                if ( source != null ) {
+                    if ( source.unitType == "handman" ) {                        
+                        soundfx1 = Assets.getSound("audio/hit_handman.mp3");				        
+                    } else {
+                        soundfx1 = Assets.getSound("audio/hit_hin_on_hero.mp3");
+                    }
+                }
+                if ( soundfx1 != null ) {
+				    soundfx1.play();
+				}
 			} else {
 				if ( !isMoving && (source != null)) {
 					turnTo(Math.atan2(source.y - this.y, source.x - this.x));
