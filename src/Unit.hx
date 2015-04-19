@@ -156,6 +156,12 @@ class Unit extends Collidable
 			} else if ( lastDirection > 0 ) {
 				currentSprite.mirror = 1;
 			}
+			if ( Main.framesPassed - lastDamagedTime < 1 ) {
+				currentSprite.x += 2;
+			}
+			else if ( Main.framesPassed - lastDamagedTime < 2 ) {
+				currentSprite.x += 1;
+			}
 		}
 		if ( currentSpriteLegs != null ) {
 			currentSpriteLegs.x = this.x;// + currentSprite.width / 2;
@@ -164,6 +170,12 @@ class Unit extends Collidable
 				currentSpriteLegs.mirror = 0;
 			} else if ( lastDirection > 0 ) {
 				currentSpriteLegs.mirror = 1;
+			}
+			if ( Main.framesPassed - lastDamagedTime < 1 ) {
+				currentSpriteLegs.y += 2;
+			}
+			else if ( Main.framesPassed - lastDamagedTime < 2 ) {
+				currentSpriteLegs.y += 1;
 			}
 		}		
 	}
@@ -192,7 +204,7 @@ class Unit extends Collidable
 			Main.layer.addChild(spriteLegsJump);
 			spriteLegsJump.visible = false;
 		}
-		if ( false ) {
+		if ( true ) {
 			graphics.beginFill(0xffffff);
 			graphics.drawRect(-this.sizeX/2,-this.sizeY/2,this.sizeX,this.sizeY);
 			graphics.endFill();
@@ -323,7 +335,7 @@ class Unit extends Collidable
 		strikeAreaX += dir * strikeAreaWidth / 2;
 		var strikeAreaY:Float = this.y;
 		//strikeAreaY -= strikeAreaHeigth / 2;
-		if (false) {
+		if (true) {
 			//highlight area
 			var particale:ExpandingParticle	= ExpandingParticle.getParticle(strikeAreaX, strikeAreaY,
 													0xff0000, 2, 30);
@@ -395,7 +407,6 @@ class Unit extends Collidable
 	}
 	
 	public function infect() {
-		trace( unitType);
 		if ( unitType.substr(unitType.length - 4) == "Ally" ) {			
 			if ( spriteBody1 != null )	Main.layer.removeChild(spriteBody1);
 			if ( spriteBody2 != null )	Main.layer.removeChild(spriteBody2);
@@ -403,7 +414,7 @@ class Unit extends Collidable
 			if ( spriteLegs1 != null )	Main.layer.removeChild(spriteLegs1);
 			if ( spriteLegs2 != null )	Main.layer.removeChild(spriteLegs2);
 			if ( spriteLegsJump != null )	Main.layer.removeChild(spriteLegsJump);
-			unitType = unitType.substr(0, unitType.length - 4);
+			unitType = unitType.substr(0, unitType.length - 4);			
 		}
 		if ( unitType == "dog" ) {			
 			spriteBody1 = new TileSprite(Main.layer, "evildog1");
@@ -413,6 +424,24 @@ class Unit extends Collidable
 			spriteLegs2 = new TileSprite(Main.layer, "evildogLeg2");
 			spriteLegsJump = new TileSprite(Main.layer, "evildogLeg3");
 			ai = Main.aiSimpleFollow;
+		}
+		if ( unitType == "gun" ) {			
+			spriteBody1 = new TileSprite(Main.layer, "evilgun1");
+			spriteBody2 = new TileSprite(Main.layer, "evilgun2");
+			spriteBody3 = new TileSprite(Main.layer, "evilgun3");
+			spriteLegs1 = new TileSprite(Main.layer, "gunLeg1");
+			spriteLegs2 = new TileSprite(Main.layer, "gunLeg2");
+			spriteLegsJump = new TileSprite(Main.layer, "gunLeg3");
+			ai = Main.aiSimpleRanged;
+		}		
+		if ( unitType == "handman" ) {			
+			spriteBody1 = new TileSprite(Main.layer, "evilhandman1");
+			spriteBody2 = new TileSprite(Main.layer, "evilhandman2");
+			spriteBody3 = new TileSprite(Main.layer, "evilhandman3");
+			spriteLegs1 = new TileSprite(Main.layer, "handmanLeg1");
+			spriteLegs2 = new TileSprite(Main.layer, "handmanLeg2");
+			spriteLegsJump = new TileSprite(Main.layer, "handmanLeg3");
+			ai = Main.aiSimpleRanged;
 		}
 		infected = true;
 		//positionSprites();
