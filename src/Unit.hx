@@ -85,7 +85,7 @@ class Unit extends Collidable
 	public function tick() {		
 		//graaavity
 		if ( Main.fullStageHeight - Main.platfromHeightAt(this.x) > this.y + this.sizeY / 2) {
-			dy += 3;
+			dy += 2;
 		}
 		if ( charge > 0 ) {
 			chargeAdd( -1);			
@@ -197,7 +197,7 @@ class Unit extends Collidable
             newMirror == 0 ? newMirror = 1 : newMirror = 0;
         }
 		if ( lastMirrorState == newMirror )	return;
-		if ( timePassedFrom(lastMirrorChange) < 30 )	return;
+		if (( this != Main.player ) && ( timePassedFrom(lastMirrorChange) < 30 ))	return;
 		lastMirrorState = newMirror;
 		lastMirrorChange = Main.framesPassed;
 		if ( spriteBody1 != null ) spriteBody1.mirror = newMirror;
@@ -262,7 +262,7 @@ class Unit extends Collidable
 		//if ( Math.abs((Main.fullStageHeight - Main.platfromHeightAt(x)) - (this.y+this.sizeY/2)) < 5 ) {
 		this.lastJumpTime = Main.framesPassed;
 		if (!isFlying()) {
-			this.dy = -50;
+			this.dy = -35;
 		}
 	}
 	
