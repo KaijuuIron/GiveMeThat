@@ -16,6 +16,7 @@ class Collidable extends Sprite
 	public var collizionGroup:Map<Collidable,Int>;
 	public var source:Unit;
 	public var immovable:Bool;
+	public var infected:Bool;
 	public function new() 
 	{
 		super();
@@ -42,7 +43,9 @@ class Collidable extends Sprite
 	
 	public function destroy() {
 		Main.collidables.remove(this);
-		Main.field.removeChild(this);		
+		if (Main.field.contains(this) ) {
+			Main.field.removeChild(this);		
+		}
 	}
 	
 	public function distanceTo(other:Collidable) {
@@ -88,7 +91,7 @@ class Collidable extends Sprite
 		return -1;
 	}
 	
-	public function takeDamage(dmg:Int) {
+	public function takeDamage(dmg:Int,source:Unit=null) {
 		trace("damage on collidable");
 	}
 }
