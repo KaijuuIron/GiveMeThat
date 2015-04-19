@@ -198,6 +198,10 @@ class Main extends Sprite
 
 		togglePause();
 		
+        //var soundfx1 = Assets.getSound("audio/lose_win.wav");
+			    //soundfx1.play();
+		var soundfx1 = Assets.getSound("audio/bg_music.mp3");
+	    soundfx1.play();
 	}
 
 	function initSheet(sheet:TilesheetEx) {
