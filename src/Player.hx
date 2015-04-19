@@ -1,6 +1,7 @@
 package ;
 import aze.display.TileSprite;
 import flash.display.Sprite;
+import openfl.Assets;
 /**
  * ...
  * @author Al
