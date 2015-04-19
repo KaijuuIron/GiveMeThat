@@ -10,7 +10,7 @@ import openfl.Assets;
 
 class ParallaxLayer extends Sprite {
     private static var sprite:InfinitySprite;
-    private static var speed;
+    private static var speed:Float;
 
 
     public function new(image, initialSpeed) {

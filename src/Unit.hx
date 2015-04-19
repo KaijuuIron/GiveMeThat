@@ -324,6 +324,7 @@ class Unit extends Collidable
 	}
 	
 	public function shoot(angle:Float) {			
+        if ( noBody )   return;
 		if ( cooldown <= 0 ) {
 			chargeAdd(2);
 			if ( charge >= 9 ) {
@@ -339,13 +340,15 @@ class Unit extends Collidable
 					Main.playerShootOrder =  false;
 				}
 				if ( ranged ) {
-                    if ( this == Main.player ) {
-                        Player.useAttackCharge();
-                    }
 					var projType:ProjectileType = null;
 					if ( unitType == "gun" ) {
 						projType = Main.projGun;
 					}
+                    if ( this == Main.player ) {
+                        if ( Player.playerWeapon == "gun" ) {
+                            projType = Main.projGun;
+                        }
+                    }
 					var proj:Projectile = new Projectile(projType);
 					proj.setAngle(angle);
 					Main.field.addChild(proj);
@@ -355,9 +358,18 @@ class Unit extends Collidable
 						proj.x += lastDirection * 100;
 						proj.y += -35;
 					}
+                    if ( this == Main.player ) {                        
+                        if ( Player.playerWeapon == "gun" ) {
+						    proj.x += lastDirection * 100;
+						    proj.y += -20;
+                        }
+                    }
 					Main.collidables.push(proj);
 					proj.source = this;
 					proj.infected = this.infected;
+                    if ( this == Main.player ) {
+                        Player.useAttackCharge();
+                    }
 				} else {										
 					if ( unitType == "dog" ) {
 						strike(dir, 100, 100);
@@ -435,7 +447,7 @@ class Unit extends Collidable
 				//var soundfx1 = Assets.getSound("audio/player_hit.wav");
 				//soundfx1.play();
 			} else {
-				if ( !isMoving ) {
+				if ( !isMoving && (source != null)) {
 					turnTo(Math.atan2(source.y - this.y, source.x - this.x));
 				}
 			}
@@ -506,7 +518,7 @@ class Unit extends Collidable
 		//positionSprites();
 	}
 	
-    public static var noBody:Bool = false;
+    public var noBody:Bool = false;
     public function destroyBody() {        
 		if ( spriteBody1 != null )	Main.layer.removeChild(spriteBody1);
 		if ( spriteBody2 != null )	Main.layer.removeChild(spriteBody2);

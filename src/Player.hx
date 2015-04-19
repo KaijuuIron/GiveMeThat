@@ -28,7 +28,13 @@ class Player
 	private static var bodySpriteBasic3:TileSprite;
     private static var bodySpriteDog1:TileSprite;
 	private static var bodySpriteDog2:TileSprite;
-	private static var bodySpriteDog3:TileSprite;
+	private static var bodySpriteDog3:TileSprite;    
+    private static var bodySpriteGun1:TileSprite;
+	private static var bodySpriteGun2:TileSprite;
+	private static var bodySpriteGun3:TileSprite;    
+    private static var bodySpriteHand1:TileSprite;
+	private static var bodySpriteHand2:TileSprite;
+	private static var bodySpriteHand3:TileSprite;
 	
 	public static function dropWeapon() {
         swapWeapon("fists");
@@ -54,6 +60,28 @@ class Player
             player.spriteBody2 = bodySpriteDog2;
             player.spriteBody3 = bodySpriteDog3;
         }        
+        
+		if ( next == "gun" ) {
+            attackCharges = 5;
+            player.dmg = 10;
+            player.ranged = true;
+            strikeAreaX = 100;
+            strikeAreaY = 200;
+            player.spriteBody1 = bodySpriteGun1;
+            player.spriteBody2 = bodySpriteGun2;
+            player.spriteBody3 = bodySpriteGun3;
+        }        
+        
+		if ( next == "hand" ) {
+            attackCharges = 4;
+            player.dmg = 25;
+            player.ranged = false;
+            strikeAreaX = 150;
+            strikeAreaY = 200;
+            player.spriteBody1 = bodySpriteHand1;
+            player.spriteBody2 = bodySpriteHand2;
+            player.spriteBody3 = bodySpriteHand3;
+        }        
         var animState:Int = player.animState;
         player.animState = 0;
         player.setAnimTo(animState);
@@ -78,12 +106,23 @@ class Player
 					swapWeapon("dog");
 					return true;
 				}
+                if ( highlightedUnit.unitType == "gun" ) {
+					highlightedUnit.destroyBody();
+					swapWeapon("gun");
+					return true;
+				}
+                if ( highlightedUnit.unitType == "handman" ) {
+					highlightedUnit.destroyBody();
+					swapWeapon("hand");
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 	
 	private static function grabbable(unit:Unit):Bool {
+        if ( unit.noBody )  return false;
 		if (unit.unitType == "dog")	return true;
 		if (unit.unitType == "gun")	return true;
 		if (unit.unitType == "handman")	return (unit.hp/unit.hpMax < 0.5);
@@ -176,6 +215,20 @@ class Player
         registerSprite(bodySpriteDog2);
         bodySpriteDog3 = new TileSprite(Main.layer, "herodog3");
         registerSprite(bodySpriteDog3);
+        
+        bodySpriteGun1 = new TileSprite(Main.layer, "herogun1");
+        registerSprite(bodySpriteGun1);
+        bodySpriteGun2 = new TileSprite(Main.layer, "herogun2");
+        registerSprite(bodySpriteGun2);
+        bodySpriteGun3 = new TileSprite(Main.layer, "herogun3");
+        registerSprite(bodySpriteGun3);
+        
+        bodySpriteHand1 = new TileSprite(Main.layer, "herohand1");
+        registerSprite(bodySpriteHand1);
+        bodySpriteHand2 = new TileSprite(Main.layer, "herohand2");
+        registerSprite(bodySpriteHand2);
+        bodySpriteHand3 = new TileSprite(Main.layer, "herohand3");
+        registerSprite(bodySpriteHand3);
     }
 	
 }

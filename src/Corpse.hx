@@ -42,13 +42,13 @@ class Corpse extends Sprite
 	public function decay() {
 		--ttlRem;
 		if ( ttlRem <= 0 ) {
-			Main.layer.removeChild(sprite);
-			Main.layer.removeChild(sprite2);
+			if(sprite!=null)    Main.layer.removeChild(sprite);
+			if(sprite2!=null)    Main.layer.removeChild(sprite2);
 			Main.corpses.remove(this);
 			return;
 		}
-		sprite.alpha = 0.1 + 0.9 * ttlRem / ttlMax;		
-		sprite2.alpha = 0.1 + 0.9 * ttlRem / ttlMax;		
+		if(sprite!=null) sprite.alpha = 0.1 + 0.9 * ttlRem / ttlMax;		
+		if(sprite2!=null) sprite2.alpha = 0.1 + 0.9 * ttlRem / ttlMax;		
 	}
 	
 }
