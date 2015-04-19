@@ -87,6 +87,7 @@ class Main extends Sprite
 		
 		var bmp = Assets.getBitmapData("img/bg0.png");
 		var mainBg = new Bitmap(bmp);
+		mainBg.width = fullStageWidth;
 		addChild(mainBg);
 		var sheet:TilesheetEx = new TilesheetEx(bmp);			
 		var r:Rectangle = cast bmp.rect.clone();
