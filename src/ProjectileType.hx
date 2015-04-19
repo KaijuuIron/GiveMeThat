@@ -13,14 +13,10 @@ class ProjectileType
 	public var ttl:Int;
 	public var bmp:String;
 	public var destroyAfterHit:Bool;
-	public var bmpDX:Float;
-	public var bmpDY:Float;
 	public function new() 
 	{
 		ttl = -1;
 		dmg = 1;
-		bmpDX = 0;
-		bmpDY = 0;
 		destroyAfterHit = true;
 	}
 	
