@@ -42,6 +42,7 @@ class Main extends Sprite
 	public static var particles:List<ExpandingParticle> = new List<ExpandingParticle>();
 	
 	public static var platfromSize:Int = 320;
+	public static var stageLength:Int = 100;
 	
 	static var globalFilter:Sprite;
 	static var hpBar:Sprite;
@@ -64,7 +65,7 @@ class Main extends Sprite
 		fullStageWidth = stage.stageWidth;
 		fullStageHeight = stage.stageHeight;
 		fieldHeightTotal = fullStageHeight;
-		fieldWidthTotal = 2 * fullStageWidth;
+		fieldWidthTotal = platfromSize * stageLength;
 		
 		var bmp = Assets.getBitmapData("img/bg0.png");
 		var sheet:TilesheetEx = new TilesheetEx(bmp);			
@@ -163,13 +164,30 @@ class Main extends Sprite
 	
 	static var platformsMap:Array<Int>;
 	static function initPlatforms() {
-		platformsMap = [95, 0, 190, 15,15,15,15,15,15,15,15,15,15];
+		platformsMap = generateMap(stageLength);//[50, 100, 200, 50, 150, 150, 150, 100, 200, 300, 50, 50, 50];
 		for ( i in 0...platformsMap.length ) {
 			var bmp = new Bitmap(Assets.getBitmapData("img/tile1.png"));
 			bmp.y = fullStageHeight - platfromHeightAt(i * platfromSize);
 			bmp.x = i * platfromSize;
 			field.addChildAt(bmp, 1);
 		}
+	}
+	public static function generateMap(length:Int):Array<Int> {
+		var map = new Array<Int>();
+		var i = 0;
+		var curPlatform = 15;
+		var random:Int;
+
+		map.push(curPlatform);
+
+		while (i <= length) {
+			random = Random.int(15, fullStageHeight);
+			curPlatform = (random - map[map.length-1] > 150) ? 150 : random;
+			map.push(curPlatform);
+			i++;
+		}
+
+		return map;
 	}
 	public static function platfromHeightAt(x:Float):Int {
 		var index = Math.floor(x / platfromSize);
