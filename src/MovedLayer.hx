@@ -9,8 +9,8 @@ import openfl.Assets;
  */
 
 class MovedLayer extends Sprite {
-    private static var sprite:InfinitySprite;
-    private static var speed;
+    private var sprite:InfinitySprite;
+    private var speed:Int;
 
 
     public function new(image, initialSpeed) {

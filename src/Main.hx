@@ -48,7 +48,7 @@ class Main extends Sprite
 	static var globalFilter:Sprite;
 	static var hpBar:Sprite;
 
-	public static var paralaxLayers = new Array<ParallaxLayer>();
+	public static var parallaxLayers = new Array<ParallaxLayer>();
 	public static var movedLayers = new Array<MovedLayer>();
 	
 	public static var mainInstance;
@@ -79,6 +79,11 @@ class Main extends Sprite
 		movedLayers.push(new MovedLayer("img/bgclouds.png", -1));
 		for ( i in 0...movedLayers.length ) {
 			addChild(movedLayers[i]);
+		}
+
+		parallaxLayers.push(new ParallaxLayer("img/bgcity.png", 0.5));
+		for ( i in 0...parallaxLayers.length ) {
+			addChild(parallaxLayers[i]);
 		}
 		
 		field = new Sprite();
@@ -511,8 +516,8 @@ class Main extends Sprite
 			p.tick();
 		}
 
-		for ( i in 0...paralaxLayers.length ) {
-			paralaxLayers[i].onFrame(field.x, field.y);
+		for ( i in 0...parallaxLayers.length ) {
+			parallaxLayers[i].onFrame(field.x, field.y);
 		}
 
 		for ( i in 0...movedLayers.length ) {
