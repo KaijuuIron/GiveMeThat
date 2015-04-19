@@ -162,6 +162,7 @@ class Main extends Sprite
 		player.sizeX = 70;
 		player.sizeY = 75;
 		player.movespeed = 8;
+        player.attackSpeed = 10;
 		player.hpMax = 100;
 		player.hp = player.hpMax;
 		player.dmg = playerBaseDmg;
@@ -198,8 +199,6 @@ class Main extends Sprite
 
 		togglePause();
 		
-        //var soundfx1 = Assets.getSound("audio/lose_win.wav");
-			    //soundfx1.play();
 		var soundfx1 = Assets.getSound("audio/bg_music.mp3");
 	    soundfx1.play();
 	}
