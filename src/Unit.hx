@@ -159,6 +159,9 @@ class Unit extends Collidable
 			}
 		}
 		positionSprites();	
+        if ( noBody ) {
+            takeDamage(1);
+        }
 	}
 	
 	public function positionSprites() {		
@@ -379,7 +382,7 @@ class Unit extends Collidable
 					}
 					if ( this == Main.player ) {
 						if (strike(dir, Player.strikeAreaX, Player.strikeAreaY)) {
-                            if (Player.playerWeapon == "fist" ) {
+                            if (Player.playerWeapon == "fists" ) {
                                 this.takeDamage(1);
                             }
                             Player.useAttackCharge();
