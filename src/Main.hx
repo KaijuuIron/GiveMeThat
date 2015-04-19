@@ -56,6 +56,8 @@ class Main extends Sprite
 
 	public static var parallaxLayers = new Array<ParallaxLayer>();
 	public static var movedLayers = new Array<MovedLayer>();
+
+	public static var bonuses = new Array<Bonus>();
 	
 	public static var mainInstance;
 	
@@ -606,6 +608,10 @@ class Main extends Sprite
 			movedLayers[i].onFrame(field.x, field.y);
 		}
 
+		for ( i in 0...bonuses.length ) {
+			bonuses[i].onFrame();
+		}
+
 		traceCamera();
 		Player.updateGrabHighlight();
         Player.redHandTick();
@@ -695,6 +701,12 @@ class Main extends Sprite
 		if (e.keyCode == 32 ) {
 			//space
 		}
+	}
+
+	public function addBonus() {
+		var bonus = new Bonus();
+		bonuses.push(bonus);
+		field.addChild(bonus);
 	}
 	
 	public static function main() 
