@@ -47,6 +47,8 @@ class Main extends Sprite
 	
 	static var globalFilter:Sprite;
 	static var hpBar:Sprite;
+
+	public static var paralaxLayers = new Array<ParallaxLayer>();
 	
 	public static var mainInstance;
 	
@@ -72,6 +74,11 @@ class Main extends Sprite
 		addChild(new Bitmap(bmp));
 		var sheet:TilesheetEx = new TilesheetEx(bmp);			
 		var r:Rectangle = cast bmp.rect.clone();
+
+		paralaxLayers.push(new ParallaxLayer("img/bgclouds.png", 0.5));
+		for ( i in 0...paralaxLayers.length ) {
+			addChild(paralaxLayers[i]);
+		}
 		
 		field = new Sprite();
 		addChild(field);		
@@ -87,7 +94,6 @@ class Main extends Sprite
 		addChild(globalFilter);
 		
 		initPlatforms();
-		
 		
 		hpBar = new Sprite();
 		//hpBar.addChild(new Bitmap(Assets.getBitmapData("img/frame.png")));
@@ -463,6 +469,11 @@ class Main extends Sprite
 		for ( p in particles ) {
 			p.tick();
 		}
+
+		for ( i in 0...paralaxLayers.length ) {
+			paralaxLayers[i].onFrame(field.x, field.y);
+		}
+
 		traceCamera();
 		Player.updateGrabHighlight();
 	}
