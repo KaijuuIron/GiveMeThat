@@ -31,6 +31,11 @@ class InfinitySprite extends Sprite {
         sprites.push(new Bitmap(bmp));
 
         sprites[1].x = spriteWidth;
+        var scale = fullStageWidth / 960;
+        sprites[1].height = fullStageHeight;
+        sprites[0].height = fullStageHeight;
+        sprites[1].width = spriteWidth * scale;
+        sprites[0].width = spriteWidth * scale;
 
         this.addChild(sprites[0]);
         this.addChild(sprites[1]);

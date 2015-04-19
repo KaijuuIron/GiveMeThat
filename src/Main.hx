@@ -88,6 +88,7 @@ class Main extends Sprite
 		var bmp = Assets.getBitmapData("img/bg0.png");
 		var mainBg = new Bitmap(bmp);
 		mainBg.width = fullStageWidth;
+		mainBg.height = fullStageHeight;
 		addChild(mainBg);
 		var sheet:TilesheetEx = new TilesheetEx(bmp);			
 		var r:Rectangle = cast bmp.rect.clone();
@@ -280,6 +281,7 @@ class Main extends Sprite
 			}
 			bmp.y = fullStageHeight - platfromHeightAt(i * platfromSize);
 			bmp.x = i * platfromSize;
+			bmp.scaleY = fullStageHeight/540;
 			field.addChildAt(bmp, 1);
 		}
 	}    
