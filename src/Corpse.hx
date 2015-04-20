@@ -47,8 +47,8 @@ class Corpse extends Sprite
 	public function decay() {
 		--ttlRem;
 		if ( ttlRem <= 0 ) {
-			if(sprite!=null)    Main.layer.removeChild(sprite);
-			if(sprite2!=null)    Main.layer.removeChild(sprite2);
+			if (sprite != null)    Main.layer.removeChild(sprite);            
+			if (sprite2 != null)    Main.layer.removeChild(sprite2);            
 			Main.corpses.remove(this);
 			return;
 		}
@@ -57,8 +57,7 @@ class Corpse extends Sprite
             this.x = sprite.x;
             this.y = sprite.y;
         }
-		if (sprite2 != null) sprite2.alpha = 0.1 + 0.7 * ttlRem / ttlMax;		
-        
+		if (sprite2 != null) sprite2.alpha = 0.1 + 0.7 * ttlRem / ttlMax;
 	}
 	
     public function getMirror():Int {

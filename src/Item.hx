@@ -18,9 +18,9 @@ class Item extends Sprite
         this.itemType = type;
         var bmp:Bitmap = null;
         if (itemType == "sign") {
-            bmp = new Bitmap(Assets.getBitmapData("img/sign1.png"));            
+            bmp = new Bitmap(Assets.getBitmapData("img/sign1.png"));
         }
-        this.addChild(bmp):
+        this.addChild(bmp);
     }
     
 }

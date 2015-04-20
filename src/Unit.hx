@@ -389,6 +389,9 @@ class Unit extends Collidable
 					}					
 					if ( unitType == "handman" ) {
 						strike(dir, 200, 200);
+					}					
+					if ( unitType == "dragon" ) {
+						strike(dir, 400, 200);
 					}
 					if ( this == Main.player ) {
                         if (Player.playerWeapon == "dog" ) {
@@ -401,7 +404,7 @@ class Unit extends Collidable
                         }
 						if (strike(dir, Player.strikeAreaX, Player.strikeAreaY)) {
                             if (Player.playerWeapon == "fists" ) {
-                                this.takeDamage(1);
+                                this.takeDamage(2);
                                 var soundfx1 = Assets.getSound("audio/hit_hin_on_hero.wav");
 				                soundfx1.play();
                             }
@@ -438,6 +441,17 @@ class Unit extends Collidable
 			rect.graphics.drawRect( -strikeAreaWidth / 2, -strikeAreaHeigth / 2, strikeAreaWidth, strikeAreaHeigth);
 			rect.graphics.endFill();
 			particale.addChild(rect);
+			Main.field.addChild(particale);										
+		}
+		if (unitType == 'dragon') {
+			//highlight area
+			var particale:ExpandingParticle	= ExpandingParticle.getParticle(strikeAreaX, strikeAreaY,
+													0xff0000, 2, 30);
+			var bmp = new Bitmap(Assets.getBitmapData("img/lazer.png"));
+			bmp.y = -20 - bmp.height / 2;
+			bmp.x = -bmp.width * 0.66;
+			particale.addChild(bmp);
+			if (dir >= 0)	particale.rotation = 180;
 			Main.field.addChild(particale);										
 		}
         var hitFlag:Bool = false;
@@ -490,8 +504,8 @@ class Unit extends Collidable
 					turnTo(Math.atan2(source.y - this.y, source.x - this.x));
 				}
 			}
-			if ( hp <= 0 ) {
-                if (!infected && ( this != Main.player )) {
+			if ( hp <= 0 && ( this != Main.player )) {
+                if (!infected) {
                     infect();
                     hp = hpMax;
                 } else {
@@ -556,6 +570,15 @@ class Unit extends Collidable
 			spriteLegs1 = new TileSprite(Main.layer, "evilhandmanLeg1");
 			spriteLegs2 = new TileSprite(Main.layer, "evilhandmanLeg2");
 			spriteLegsJump = new TileSprite(Main.layer, "evilhandmanLeg3");
+			ai = Main.aiSimpleFollow;
+		}
+        if ( unitType == "dragon" ) {			
+			spriteBody1 = new TileSprite(Main.layer, "dragon1");
+			spriteBody2 = new TileSprite(Main.layer, "dragon2");
+			spriteBody3 = new TileSprite(Main.layer, "dragon3");
+			spriteLegs1 = new TileSprite(Main.layer, "dragonLeg1");
+			spriteLegs2 = new TileSprite(Main.layer, "dragonLeg2");
+			spriteLegsJump = new TileSprite(Main.layer, "dragonLeg3");
 			ai = Main.aiSimpleFollow;
 		}
 		infected = true;

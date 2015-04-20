@@ -9,6 +9,8 @@ import flash.Lib;
 import aze.display.TileLayer;
 import aze.display.TilesheetEx;
 import aze.display.TileSprite;
+import flash.media.Sound;
+import flash.media.SoundChannel;
 import openfl.Assets;
 
 /**
@@ -63,6 +65,8 @@ class Main extends Sprite
 	public static var bonuses = new Array<Bonus>();
 	
 	public static var mainInstance;
+
+	public var currentPopup:String = '';
 	
 	/* ENTRY POINT */
 	
@@ -186,6 +190,7 @@ class Main extends Sprite
 		//spawnUnit("handman", (2 + 0.5) * platfromSize);
 		//spawnUnit("dog", (4 + 0.3) * platfromSize);
 		//spawnUnit("gun", (3 + 0.5) * platfromSize);
+        spawnUnit("dragon", (3 + 0.5) * platfromSize);
 		//spawnUnit("dogAlly", (4 + 0.8) * platfromSize);
         fillWithMobs();
 		
@@ -206,12 +211,16 @@ class Main extends Sprite
 		addChild(pausePopup);
 		setComics();
 		
-		var soundfx1 = Assets.getSound("audio/bg_music.mp3");
-	    soundfx1.play();
+		bgSound = Assets.getSound("audio/bg_music.mp3");
+	    bgSoundChannel = bgSound.play();
+        //bgSoundChannel.stop();
         
-        addItem(new Item("sign"), 100);
-        addItem(new Item("sign"), 300);
+        //addItem(new Item("sign"), 100);
+        //addItem(new Item("sign"), 300);
 	}
+    public static var bgSound:Sound;
+    public static var bgSoundChannel:SoundChannel;    
+    public static var bgSoundPos:Int = 0;
 
 	function setComics():Void {
 		comicsPages.push(getBitmap("img/textwon.png"));
@@ -280,6 +289,20 @@ class Main extends Sprite
 		addDefToSheet(sheet, "evilhandmanLeg2", "img/evilhandmanlegs2.png");
 		addDefToSheet(sheet, "evilhandmanLeg3", "img/evilhandmanlegs3.png");
 		addDefToSheet(sheet, "evilhandmanlight", "img/evilhandmanlight.png");
+        
+        addDefToSheet(sheet, "dragon1", "img/dragonbody1.png");
+		addDefToSheet(sheet, "dragon2", "img/dragonbody2.png");
+		addDefToSheet(sheet, "dragon3", "img/dragonbody3.png");
+		//addDefToSheet(sheet, "evilhandman1", "img/evilhandmanlbody1.png");
+		//addDefToSheet(sheet, "evilhandman2", "img/evilhandmanlbody2.png");
+		//addDefToSheet(sheet, "evilhandman3", "img/evilhandmanlbody3.png");
+		addDefToSheet(sheet, "dragonLeg1", "img/dragonlegs1.png");
+		addDefToSheet(sheet, "dragonLeg2", "img/dragonlegs2.png");
+		addDefToSheet(sheet, "dragonLeg3", "img/dragonlegs3.png");        
+		//addDefToSheet(sheet, "evilhandmanLeg1", "img/evilhandmanlegs1.png");
+		//addDefToSheet(sheet, "evilhandmanLeg2", "img/evilhandmanlegs2.png");
+		//addDefToSheet(sheet, "evilhandmanLeg3", "img/evilhandmanlegs3.png");
+		//addDefToSheet(sheet, "evilhandmanlight", "img/evilhandmanlight.png");
 	}
 	
 	function addDefToSheet(sheet:TilesheetEx, name:String, bmp:String) {
@@ -289,7 +312,9 @@ class Main extends Sprite
 	}
 	
 	static var platformsMap:Array<Int>;
+	static var platformsMapBitmaps;
 	function initPlatforms() {
+		platformsMapBitmaps = new Array<Bitmap>();
 		platformsMap = generateMap(stageLength);
 		for ( i in 0...platformsMap.length ) {			
 			var bmp;
@@ -301,6 +326,7 @@ class Main extends Sprite
 			bmp.y = fullStageHeight - platfromHeightAt(i * platfromSize);
 			bmp.x = i * platfromSize;
 			bmp.scaleY = fullStageHeight/540;
+			platformsMapBitmaps.push(bmp);
 			field.addChildAt(bmp, 1);
 		}
 	}    
@@ -308,6 +334,7 @@ class Main extends Sprite
         for ( i in 2...platformsMap.length ) {	            
             spawnRandomMob(i * platfromSize);
         }
+        spawnUnit("dragon", (stageLength - 7 + 0.5) * platfromSize);
     }
 	public static function generateMap(length:Int):Array<Int> {
 		var map = new Array<Int>();
@@ -432,6 +459,15 @@ class Main extends Sprite
 			newMonster.attackSpeed = 40;
 			newMonster.ranged = false;
 		}
+        if (truncName(newMonster.unitType) == "dragon" ) {
+			newMonster.sizeX = 150;
+			newMonster.sizeY = 180;
+			newMonster.movespeed = 6;
+			newMonster.hpMax = 100;
+			newMonster.dmg = 35;
+			newMonster.attackSpeed = 90;
+			newMonster.ranged = false;
+		}
 		if ( newMonster.unitType == "dogAlly" ) {
 			newMonster.infected = false;
 			newMonster.ai = aiAlly;
@@ -465,6 +501,17 @@ class Main extends Sprite
 			newMonster.spriteLegs1 = new TileSprite(layer, "handmanLeg1");
 			newMonster.spriteLegs2 = new TileSprite(layer, "handmanLeg2");
 			newMonster.spriteLegsJump = new TileSprite(layer, "handmanLeg3");
+		}
+        if ( newMonster.unitType == "dragonAlly" ) {
+			newMonster.infected = false;
+			newMonster.ai = aiAlly;
+			
+			newMonster.spriteBody1 = new TileSprite(layer, "dragon1");
+			newMonster.spriteBody2 = new TileSprite(layer, "dragon2");
+			newMonster.spriteBody3 = new TileSprite(layer, "dragon3");
+			newMonster.spriteLegs1 = new TileSprite(layer, "dragonLeg1");
+			newMonster.spriteLegs2 = new TileSprite(layer, "dragonLeg2");
+			newMonster.spriteLegsJump = new TileSprite(layer, "dragonLeg3");
 		}
 		if ( newMonster.unitType.substr(newMonster.unitType.length - 4) != "Ally" ) {	
 			newMonster.infect();
@@ -533,7 +580,7 @@ class Main extends Sprite
 		globalFilter.graphics.endFill();
 		globalFilter.alpha = 1.0;
 	}
-	function onFrame(e) {				
+	function onFrame(e) {
 		layer.render();		
 		/*if ( pause && tutotalOn && (tutotalLessonCurrent == 1 )) {
 			if ( keymap.get(37) || keymap.get(65) ) continueGame(); 
@@ -543,16 +590,18 @@ class Main extends Sprite
 		}*/
 		var playerDead = player.hp <= 0;
 		var playerWon = player.x >= fieldWidthTotal - platfromSize / 2 - 20;
-		if (playerDead || playerWon) {
+		if ((playerDead || playerWon) && !gameEnded) {
 			setPause(true);
 			gameEnded = true;
 		}
 
 		if (pause) {
-			if (playerDead) {
+			if (playerDead && currentPopup.length == 0) {
 				addChild(losePopup);
-			} else if(playerWon) {
+				currentPopup = 'lose';
+			} else if(playerWon && currentPopup.length == 0) {
 				addChild(winPopup);
+				currentPopup = 'win';
 			}
 			return;
 		}
@@ -599,7 +648,7 @@ class Main extends Sprite
 									if (object.destroyAfterHit)	{
                                         object.destroy();
                                         var particale:ExpandingParticle	= ExpandingParticle.getParticle(object.x, object.y,
-													0xff0000, 1, 10, 0.05, -0.07);
+													0xff0000, 1, 5, 0.05);
                                         var bmp:Bitmap = new Bitmap(Assets.getBitmapData("img/gunbulletnolight.png"));
                                         bmp.x = -bmp.width / 2;
                                         bmp.y = -bmp.height / 2;
@@ -664,7 +713,7 @@ class Main extends Sprite
 	static var keymap:Map<Int,Bool> = new Map<Int,Bool>();
 	
 	function onDown(e) {	
-		//trace(e.keyCode);
+		// trace(e.keyCode);
 		keymap.set(e.keyCode, true);						
 		if (e.keyCode == 32) {
 			//space
@@ -680,7 +729,8 @@ class Main extends Sprite
 			
 		}
 		if ( e.keyCode == 79 ) {
-			//Main.resetGame();
+			//O
+			resetGame();
 		}
 		
 		if ( e.keyCode == 82 ) {
@@ -729,9 +779,11 @@ class Main extends Sprite
 		    var playerWon = player.x >= fieldWidthTotal - platfromSize / 2 - 20;
             if (!playerDead && !playerWon) {
 				addChild(pausePopup);
+				currentPopup = 'pause';
 			}			
 		} else {
 			removeChild(pausePopup);			
+			currentPopup = '';
 		}
     }
 	
@@ -754,5 +806,51 @@ class Main extends Sprite
 		Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
 		Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		Lib.current.addChild(new Main());
+	}
+
+	function resetTiles():Void {
+		for (i in 0 ... platformsMapBitmaps.length) {
+			field.removeChild(platformsMapBitmaps[i]);
+		}
+		initPlatforms();
+	}
+
+	function resetEnemies():Void {
+		for (enemy in enemies) {
+			enemy.removeFromGame();
+		}
+		fillWithMobs();
+
+	}
+
+	function resetCameraPos():Void {
+		field.x = 0;
+	}
+
+	function resetPlayer():Void {
+		player.x = platfromSize / 2;
+		player.y = fullStageHeight - platfromHeightAt(player.x) - player.sizeY / 2;
+		Player.dropWeapon();
+		player.hp = player.hpMax;
+		trackPlayerHp();
+	}
+
+	public function resetGame():Void {
+		resetTiles();
+		resetEnemies();
+		// TO-DO: reset corps
+		resetPlayer();
+		resetCameraPos();
+		switch (currentPopup) {
+			case 'lose':
+				removeChild(losePopup);
+			case 'win':
+				removeChild(winPopup);
+			case 'pause':
+				removeChild(pausePopup);
+		}			
+		currentPopup = '';
+		gameEnded = false;
+		setPause(true);
 	}
 }

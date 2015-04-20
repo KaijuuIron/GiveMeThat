@@ -45,14 +45,15 @@ class ExpandingParticle extends Sprite
 				Main.particles.remove(this);
 				this.parent.removeChild(this);
 				particleCache.add(this);
+				this.removeChildren();
 			}
 		} else {
 			++time;
 			scaleX += dSize;
 			scaleY += dSize;
-			alpha -= dAlpha;
-			x += dx;
-			y += dy;
+			if (Math.abs(dAlpha) > 0) alpha -= dAlpha;            
+			if (Math.abs(dx) > 0) x += dx;
+			if (Math.abs(dy) > 0) y += dy;
 		}
 	}
 	
