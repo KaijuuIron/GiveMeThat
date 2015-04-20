@@ -285,7 +285,9 @@ class Main extends Sprite
 	}
 	
 	static var platformsMap:Array<Int>;
+	static var platformsMapBitmaps;
 	function initPlatforms() {
+		platformsMapBitmaps = new Array<Bitmap>();
 		platformsMap = generateMap(stageLength);
 		for ( i in 0...platformsMap.length ) {			
 			var bmp;
@@ -297,6 +299,7 @@ class Main extends Sprite
 			bmp.y = fullStageHeight - platfromHeightAt(i * platfromSize);
 			bmp.x = i * platfromSize;
 			bmp.scaleY = fullStageHeight/540;
+			platformsMapBitmaps.push(bmp);
 			field.addChildAt(bmp, 1);
 		}
 	}    
@@ -653,7 +656,7 @@ class Main extends Sprite
 	static var keymap:Map<Int,Bool> = new Map<Int,Bool>();
 	
 	function onDown(e) {	
-		//trace(e.keyCode);
+		trace(e.keyCode);
 		keymap.set(e.keyCode, true);						
 		if (e.keyCode == 32) {
 			//space
@@ -669,7 +672,8 @@ class Main extends Sprite
 			
 		}
 		if ( e.keyCode == 79 ) {
-			//Main.resetGame();
+			//O
+			resetGame();
 		}
 		
 		if ( e.keyCode == 82 ) {
@@ -743,5 +747,25 @@ class Main extends Sprite
 		Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
 		Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		Lib.current.addChild(new Main());
+	}
+
+	function resetTiles():Void {
+		for (i in 0 ... platformsMapBitmaps.length) {
+			field.removeChild(platformsMapBitmaps[i]);
+		}
+	}
+
+	public function resetGame():Void {
+		resetTiles();
+		initPlatforms();
+		//reset mobs
+		//reset corps
+		//reset allays
+		//reset player
+		// -- hp
+		// -- pos
+		// -- weapon
+		//reset camera pos
+		//reset pause
 	}
 }
