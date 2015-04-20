@@ -50,9 +50,9 @@ class ExpandingParticle extends Sprite
 			++time;
 			scaleX += dSize;
 			scaleY += dSize;
-			alpha -= dAlpha;
-			x += dx;
-			y += dy;
+			if (Math.abs(dAlpha) > 0) alpha -= dAlpha;            
+			if (Math.abs(dx) > 0) x += dx;
+			if (Math.abs(dy) > 0) y += dy;
 		}
 	}
 	

@@ -9,6 +9,8 @@ import flash.Lib;
 import aze.display.TileLayer;
 import aze.display.TilesheetEx;
 import aze.display.TileSprite;
+import flash.media.Sound;
+import flash.media.SoundChannel;
 import openfl.Assets;
 
 /**
@@ -206,12 +208,16 @@ class Main extends Sprite
 		addChild(pausePopup);
 		setComics();
 		
-		var soundfx1 = Assets.getSound("audio/bg_music.mp3");
-	    soundfx1.play();
+		bgSound = Assets.getSound("audio/bg_music.mp3");
+	    bgSoundChannel = bgSound.play();
+        //bgSoundChannel.stop();
         
-        addItem(new Item("sign"), 100);
-        addItem(new Item("sign"), 300);
+        //addItem(new Item("sign"), 100);
+        //addItem(new Item("sign"), 300);
 	}
+    public static var bgSound:Sound;
+    public static var bgSoundChannel:SoundChannel;    
+    public static var bgSoundPos:Int = 0;
 
 	function setComics():Void {
 		comicsPages.push(getBitmap("img/textwon.png"));
@@ -599,7 +605,7 @@ class Main extends Sprite
 									if (object.destroyAfterHit)	{
                                         object.destroy();
                                         var particale:ExpandingParticle	= ExpandingParticle.getParticle(object.x, object.y,
-													0xff0000, 1, 10, 0.05, -0.07);
+													0xff0000, 1, 5, 0.05);
                                         var bmp:Bitmap = new Bitmap(Assets.getBitmapData("img/gunbulletnolight.png"));
                                         bmp.x = -bmp.width / 2;
                                         bmp.y = -bmp.height / 2;
