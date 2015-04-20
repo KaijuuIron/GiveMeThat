@@ -163,8 +163,8 @@ class Unit extends Collidable
             takeDamage(Math.ceil(hpMax/20));
         }
 	}
-	
-	public function positionSprites() {		
+    
+    function positionBodySprite() {        
 		if ( currentSprite != null ) {
 			currentSprite.x = this.x;// + currentSprite.width / 2;
 			currentSprite.y = this.y - currentSprite.height / 2 + this.sizeY / 2;
@@ -175,6 +175,10 @@ class Unit extends Collidable
 				currentSprite.x += 1;
 			}
 		}
+    }
+	
+	public function positionSprites() {		
+        positionBodySprite();
 		if ( currentSpriteLegs != null ) {
 			currentSpriteLegs.x = this.x;// + currentSprite.width / 2;
 			currentSpriteLegs.y = this.y - currentSpriteLegs.height / 2 + this.sizeY / 2;
@@ -387,6 +391,14 @@ class Unit extends Collidable
 						strike(dir, 200, 200);
 					}
 					if ( this == Main.player ) {
+                        if (Player.playerWeapon == "dog" ) {
+                            var soundfx1 = Assets.getSound("audio/hit_hin_on_hero.wav");
+                            soundfx1.play();
+                        }
+                        if (Player.playerWeapon == "hand" ) {
+                            var soundfx1 = Assets.getSound("audio/hit_handman.wav");
+                            soundfx1.play();
+                        }
 						if (strike(dir, Player.strikeAreaX, Player.strikeAreaY)) {
                             if (Player.playerWeapon == "fists" ) {
                                 this.takeDamage(1);
@@ -394,14 +406,6 @@ class Unit extends Collidable
 				                soundfx1.play();
                             }
                             Player.useAttackCharge();
-                            if (Player.playerWeapon == "dog" ) {
-                                var soundfx1 = Assets.getSound("audio/hit_hin_on_hero.wav");
-				                soundfx1.play();
-                            }
-                            if (Player.playerWeapon == "hand" ) {
-                                var soundfx1 = Assets.getSound("audio/hit_handman.wav");
-				                soundfx1.play();
-                            }
                         }
 					}
 				}
@@ -458,6 +462,10 @@ class Unit extends Collidable
 	function chargeAdd(val:Int) {
 		charge += val;
 	}
+    
+    public function onCharge():Bool {
+        return charge > 0;
+    }
 	
 	override
 	public function takeDamage(dmg:Int, source:Unit = null) {
@@ -483,7 +491,12 @@ class Unit extends Collidable
 				}
 			}
 			if ( hp <= 0 ) {
-				kill();
+                if (!infected && ( this != Main.player )) {
+                    infect();
+                    hp = hpMax;
+                } else {
+				    kill();
+                }
 			}			
 		}
 	}
@@ -667,6 +680,8 @@ class Unit extends Collidable
 		if ( animState == 3 )	currentSprite = spriteBody3;
 		if ( currentSprite != null ) {
 			currentSprite.visible = true;
+            currentSprite.mirror = lastMirrorState;
+            positionBodySprite();
 		}
 	}
 	
