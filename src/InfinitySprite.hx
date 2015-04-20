@@ -14,6 +14,7 @@ class InfinitySprite extends Sprite {
     private var fullStageHeight:Int;
     private var spriteHeight:Int;
     private var spriteWidth:Int;
+    private var scale:Float;
 
 
     public function new(image) {
@@ -31,14 +32,19 @@ class InfinitySprite extends Sprite {
         sprites.push(new Bitmap(bmp));
 
         sprites[1].x = spriteWidth;
+        scale = fullStageWidth / 960;
+        sprites[1].height = fullStageHeight;
+        sprites[0].height = fullStageHeight;
+        sprites[1].width = spriteWidth * scale;
+        sprites[0].width = spriteWidth * scale;
 
         this.addChild(sprites[0]);
         this.addChild(sprites[1]);
     }
 
     public function setX(newPos:Float = 0) {
-        sprites[0].x = newPos%spriteWidth;
-        sprites[1].x = newPos%spriteWidth + spriteWidth;
+        sprites[0].x = newPos%(spriteWidth * scale);
+        sprites[1].x = newPos%(spriteWidth * scale) + spriteWidth * scale;
     }
 
     public function setY(newPos:Float = 0) {

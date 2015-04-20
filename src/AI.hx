@@ -2,7 +2,7 @@ package ;
 
 /**
  * ...
- * @author Al
+ * @author Al, LonelyFlame
  */
 class AI
 {
@@ -78,10 +78,9 @@ class AI
     
     public function allyHeal(unit:Unit) {
         if ( !unit.infected ) {
-            if ( unit.x < Main.player.x - Main.fullStageWidth * 1.5 ) {
+            if (unit.x + Main.field.x <= 0) {
                 unit.removeFromGame();
-                Main.healOn();
-                Main.player.heal(25);
+                Main.mainInstance.addBonus();
             }
         }
     }

@@ -44,7 +44,7 @@ class Main extends Sprite
 	public static var particles:List<ExpandingParticle> = new List<ExpandingParticle>();
 	
 	public static var platfromSize:Int = 320;
-	public static var stageLength:Int = 50;
+	public static var stageLength:Int = 35;
 	
 	static var globalFilter:Sprite;
 	static var hpBar:Sprite;
@@ -56,6 +56,8 @@ class Main extends Sprite
 
 	public static var parallaxLayers = new Array<ParallaxLayer>();
 	public static var movedLayers = new Array<MovedLayer>();
+
+	public static var bonuses = new Array<Bonus>();
 	
 	public static var mainInstance;
 	
@@ -88,6 +90,7 @@ class Main extends Sprite
 		var bmp = Assets.getBitmapData("img/bg0.png");
 		var mainBg = new Bitmap(bmp);
 		mainBg.width = fullStageWidth;
+		mainBg.height = fullStageHeight;
 		addChild(mainBg);
 		var sheet:TilesheetEx = new TilesheetEx(bmp);			
 		var r:Rectangle = cast bmp.rect.clone();
@@ -162,7 +165,8 @@ class Main extends Sprite
 		player.sizeX = 70;
 		player.sizeY = 75;
 		player.movespeed = 8;
-		player.hpMax = 100;
+        player.attackSpeed = 10;
+		player.hpMax = 200;
 		player.hp = player.hpMax;
 		player.dmg = playerBaseDmg;
 		player.ranged = false;		
@@ -198,8 +202,6 @@ class Main extends Sprite
 
 		togglePause();
 		
-        //var soundfx1 = Assets.getSound("audio/lose_win.wav");
-			    //soundfx1.play();
 		var soundfx1 = Assets.getSound("audio/bg_music.mp3");
 	    soundfx1.play();
 	}
@@ -281,6 +283,7 @@ class Main extends Sprite
 			}
 			bmp.y = fullStageHeight - platfromHeightAt(i * platfromSize);
 			bmp.x = i * platfromSize;
+			bmp.scaleY = fullStageHeight/540;
 			field.addChildAt(bmp, 1);
 		}
 	}    
@@ -294,7 +297,7 @@ class Main extends Sprite
 		var i = 0;
 		var curPlatform = 15;
 		var random:Int;
-		var maxDiff = 150;
+		var maxDiff = 120;
 		var minDiff = 50;
 		var diff = 0;
 
@@ -605,6 +608,10 @@ class Main extends Sprite
 			movedLayers[i].onFrame(field.x, field.y);
 		}
 
+		for ( i in 0...bonuses.length ) {
+			bonuses[i].onFrame();
+		}
+
 		traceCamera();
 		Player.updateGrabHighlight();
         Player.redHandTick();
@@ -628,6 +635,7 @@ class Main extends Sprite
 		keymap.set(e.keyCode, true);						
 		if (e.keyCode == 32) {
 			//space
+            player.jump();
 		}
 		if ((e.keyCode == 38 ) || (e.keyCode == 87)) {
 			player.jump();
@@ -644,11 +652,13 @@ class Main extends Sprite
 		
 		if ( e.keyCode == 82 ) {
 			//R
+            playerShootOrder = true;
 		}
 		if ( e.keyCode == 69 ) {
 			//E
+            playerShootOrder = true;
 		}
-		if ( e.keyCode == 80 ) {
+		if (( e.keyCode == 80 ) || ( e.keyCode == 13 )) {
 			//P
             if (!gameEnded) {
 			    togglePause();
@@ -656,7 +666,7 @@ class Main extends Sprite
 		}
 		if ( e.keyCode == 84 ) {
 			//T
-			
+			Player.attemptGrab();
 		}
 		if ( e.keyCode == 74 ) {
 			//J
@@ -676,7 +686,11 @@ class Main extends Sprite
     function setPause(value:Bool) {        
         pause = value;
 		if (value) {
-			addChild(pausePopup);
+            var playerDead = player.hp <= 0;
+		    var playerWon = player.x >= fieldWidthTotal - platfromSize / 2 - 20;
+            if (!playerDead && !playerWon) {
+				addChild(pausePopup);
+			}			
 		} else {
 			removeChild(pausePopup);			
 		}
@@ -687,6 +701,12 @@ class Main extends Sprite
 		if (e.keyCode == 32 ) {
 			//space
 		}
+	}
+
+	public function addBonus() {
+		var bonus = new Bonus();
+		bonuses.push(bonus);
+		field.addChild(bonus);
 	}
 	
 	public static function main() 
