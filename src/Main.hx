@@ -196,7 +196,7 @@ class Main extends Sprite
         fillWithMobs();
 		
         
-        var signstopLight = new Bitmap(Assets.getBitmapData("img/signlight.png"));		
+        signstopLight = new Bitmap(Assets.getBitmapData("img/signlight.png"));		
         signstopLight.x = fieldWidthTotal - platfromSize / 2;
         signstopLight.y = fullStageHeight - platfromHeightAt(signstopLight.x) - signstopLight.height;
         field.addChild(signstopLight);
@@ -226,9 +226,9 @@ class Main extends Sprite
     public static var bgSoundOn:Bool = false;
 
 	function setComics():Void {
-		comicsPages.push(getBitmap("img/textwon.png"));
-		comicsPages.push(getBitmap("img/textwon.png"));
-		comicsPages.push(getBitmap("img/textwon.png"));
+		comicsPages.push(getBitmap("img/comics3.png"));
+		comicsPages.push(getBitmap("img/comics2.png"));
+		comicsPages.push(getBitmap("img/comics1.png"));
 
 		for (i in 0 ... comicsPages.length) {
 			addChild(comicsPages[i]);
