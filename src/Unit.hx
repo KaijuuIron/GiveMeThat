@@ -376,6 +376,7 @@ class Unit extends Collidable
 						    proj.x += lastDirection * 100;
 						    proj.y += -20;
                         }
+                        proj.dmg = this.dmg;
                     }
 					Main.collidables.push(proj);
 					proj.source = this;
@@ -391,7 +392,7 @@ class Unit extends Collidable
 						strike(dir, 200, 200);
 					}					
 					if ( unitType == "dragon" ) {
-						strike(dir, 400, 200);
+						strike(dir, 400, 150);
 					}
 					if ( this == Main.player ) {
                         if (Player.playerWeapon == "dog" ) {
@@ -445,14 +446,15 @@ class Unit extends Collidable
 		}
 		if (unitType == 'dragon') {
 			//highlight area
-			var particale:ExpandingParticle	= ExpandingParticle.getParticle(strikeAreaX, strikeAreaY,
+            var laserDir = this.lastDirection;
+			var particale:ExpandingParticle	= ExpandingParticle.getParticle(this.x + this.sizeX / 2 * laserDir, this.y - 10,
 													0xff0000, 2, 30);
 			var bmp = new Bitmap(Assets.getBitmapData("img/lazer.png"));
-			bmp.y = -20 - bmp.height / 2;
-			bmp.x = -bmp.width * 0.66;
+			bmp.y = - bmp.height / 2 - 9;
+			bmp.x = -bmp.width * 0.86;
 			particale.addChild(bmp);
-			if (dir >= 0)	particale.rotation = 180;
-			Main.field.addChild(particale);										
+			if (laserDir >= 0)	particale.rotation = 180;
+			Main.field.addChild(particale);            
 		}
         var hitFlag:Bool = false;
 		for ( another in Main.collidables ) {
