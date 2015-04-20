@@ -83,7 +83,8 @@ class Main extends Sprite
 		bitmap.y = 0 - bitmap.height/2 + fullStageHeight/2;
 		return bitmap;
 	}
-	
+	public static var signstop:Bitmap;
+	public static var signstopLight:Bitmap;
 	function init() 
 	{
 		if (inited) return;
@@ -190,18 +191,18 @@ class Main extends Sprite
 		//spawnUnit("handman", (2 + 0.5) * platfromSize);
 		//spawnUnit("dog", (4 + 0.3) * platfromSize);
 		//spawnUnit("gun", (3 + 0.5) * platfromSize);
-        spawnUnit("dragon", (3 + 0.5) * platfromSize);
+        //spawnUnit("dragon", (3 + 0.5) * platfromSize);
 		//spawnUnit("dogAlly", (4 + 0.8) * platfromSize);
         fillWithMobs();
 		
         
-        var bmp = new Bitmap(Assets.getBitmapData("img/signlight.png"));		
-        bmp.x = fieldWidthTotal - platfromSize / 2;
-        bmp.y = fullStageHeight - platfromHeightAt(bmp.x) - bmp.height;
-        field.addChild(bmp);
-        var signstop = new Bitmap(Assets.getBitmapData("img/sign1.png"));		
+        var signstopLight = new Bitmap(Assets.getBitmapData("img/signlight.png"));		
+        signstopLight.x = fieldWidthTotal - platfromSize / 2;
+        signstopLight.y = fullStageHeight - platfromHeightAt(signstopLight.x) - signstopLight.height;
+        field.addChild(signstopLight);
+        signstop = new Bitmap(Assets.getBitmapData("img/sign1.png"));		
         signstop.x = fieldWidthTotal - platfromSize / 2;
-        signstop.y = fullStageHeight - platfromHeightAt(signstop.x) - bmp.height;
+        signstop.y = fullStageHeight - platfromHeightAt(signstop.x) - signstop.height;
         field.addChild(signstop);
         
 		addEventListener(Event.ENTER_FRAME, onFrame);		
@@ -212,7 +213,8 @@ class Main extends Sprite
 		setComics();
 		
 		bgSound = Assets.getSound("audio/bg_music.mp3");
-	    bgSoundChannel = bgSound.play();
+	    bgSoundChannel = bgSound.play(0, 9999);
+        bgSoundOn = true;
         //bgSoundChannel.stop();
         
         //addItem(new Item("sign"), 100);
@@ -220,7 +222,8 @@ class Main extends Sprite
 	}
     public static var bgSound:Sound;
     public static var bgSoundChannel:SoundChannel;    
-    public static var bgSoundPos:Int = 0;
+    public static var bgSoundPos:Float = 0;
+    public static var bgSoundOn:Bool = false;
 
 	function setComics():Void {
 		comicsPages.push(getBitmap("img/textwon.png"));
@@ -331,10 +334,13 @@ class Main extends Sprite
 		}
 	}    
     function fillWithMobs() {
+        var dragonPos:Int = stageLength - 7;
         for ( i in 2...platformsMap.length ) {	            
-            spawnRandomMob(i * platfromSize);
+            if ( i != dragonPos ) {
+                spawnRandomMob(i * platfromSize);
+            }
         }
-        spawnUnit("dragon", (stageLength - 7 + 0.5) * platfromSize);
+        spawnUnit("dragon", (dragonPos + 0.5) * platfromSize);
     }
 	public static function generateMap(length:Int):Array<Int> {
 		var map = new Array<Int>();
@@ -464,7 +470,7 @@ class Main extends Sprite
 			newMonster.sizeY = 180;
 			newMonster.movespeed = 6;
 			newMonster.hpMax = 100;
-			newMonster.dmg = 35;
+			newMonster.dmg = 25;
 			newMonster.attackSpeed = 90;
 			newMonster.ranged = false;
 		}
@@ -781,9 +787,18 @@ class Main extends Sprite
 				addChild(pausePopup);
 				currentPopup = 'pause';
 			}			
+            if ( bgSoundOn ) {
+                bgSoundPos = bgSoundChannel.position;            
+                bgSoundChannel.stop();
+                bgSoundOn = false;
+            }
 		} else {
 			removeChild(pausePopup);			
 			currentPopup = '';
+            if (!bgSoundOn) {
+                bgSoundChannel = bgSound.play(bgSoundPos, 9999);
+                bgSoundOn = true;
+            }
 		}
     }
 	
@@ -837,6 +852,8 @@ class Main extends Sprite
 
 	public function resetGame():Void {
 		resetTiles();
+        signstopLight.y = fullStageHeight - platfromHeightAt(signstopLight.x) - signstopLight.height;
+        signstop.y = fullStageHeight - platfromHeightAt(signstop.x) - signstop.height;
 		resetEnemies();
 		// TO-DO: reset corps
 		resetPlayer();
