@@ -334,6 +334,7 @@ class Main extends Sprite
         for ( i in 2...platformsMap.length ) {	            
             spawnRandomMob(i * platfromSize);
         }
+        spawnUnit("dragon", (stageLength - 7 + 0.5) * platfromSize);
     }
 	public static function generateMap(length:Int):Array<Int> {
 		var map = new Array<Int>();
@@ -460,11 +461,11 @@ class Main extends Sprite
 		}
         if (truncName(newMonster.unitType) == "dragon" ) {
 			newMonster.sizeX = 150;
-			newMonster.sizeY = 150;
+			newMonster.sizeY = 180;
 			newMonster.movespeed = 6;
 			newMonster.hpMax = 100;
-			newMonster.dmg = 25;
-			newMonster.attackSpeed = 60;
+			newMonster.dmg = 35;
+			newMonster.attackSpeed = 90;
 			newMonster.ranged = false;
 		}
 		if ( newMonster.unitType == "dogAlly" ) {

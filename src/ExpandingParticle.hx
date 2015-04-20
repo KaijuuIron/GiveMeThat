@@ -45,6 +45,7 @@ class ExpandingParticle extends Sprite
 				Main.particles.remove(this);
 				this.parent.removeChild(this);
 				particleCache.add(this);
+				this.removeChildren();
 			}
 		} else {
 			++time;
