@@ -45,8 +45,7 @@ class Bonus extends Sprite {
         //this.y = Main.player.y;
         if ((progres > progresMax) && (Math.sqrt(Math.pow(Main.player.x - this.x, 2) + Math.pow(Main.player.y - this.y, 2)) < Main.player.sizeY/2)) {
             Main.healOn();
-            Main.player.heal(25);
-            //refactor this shit out from here
+            Main.player.heal(25);            //refactor this shit out from here
             Main.field.removeChild(this);
             Main.bonuses.remove(this);
         }

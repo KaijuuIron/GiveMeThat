@@ -41,6 +41,7 @@ class Main extends Sprite
 	public static var collidables:Array<Collidable>;
 	public static var enemies:Array<Unit>;
 	public static var corpses:List<Corpse>;
+	public static var items:Array<Item> = new Array<Item>();
 	public static var particles:List<ExpandingParticle> = new List<ExpandingParticle>();
 	
 	public static var platfromSize:Int = 320;
@@ -209,6 +210,9 @@ class Main extends Sprite
 		
 		var soundfx1 = Assets.getSound("audio/bg_music.mp3");
 	    soundfx1.play();
+        
+        addItem(new Item("sign"), 100);
+        addItem(new Item("sign"), 300);
 	}
 
 	function setComics():Void {
@@ -386,6 +390,13 @@ class Main extends Sprite
 			enemies.push(unit);
 		}
 	}
+    
+    public static function addItem(item:Item, x:Float) {		
+        field.addChild(item);
+        item.x = x;
+        item.y = fullStageHeight - platfromHeightAt(x) - item.height / 2;
+        items.push(item);
+    }
 	
 	public static function truncName(name:String):String {
 		if ( name.substr(name.length - 4) == "Ally" ) {	
@@ -595,8 +606,8 @@ class Main extends Sprite
 									if (object.destroyAfterHit)	{
                                         object.destroy();
                                         var particale:ExpandingParticle	= ExpandingParticle.getParticle(object.x, object.y,
-													0xff0000, 1, 10, 0.1, -0.03);
-                                        var bmp:Bitmap = new Bitmap(Assets.getBitmapData("img/gunbullet.png"));
+													0xff0000, 1, 10, 0.05, -0.07);
+                                        var bmp:Bitmap = new Bitmap(Assets.getBitmapData("img/gunbulletnolight.png"));
                                         bmp.x = -bmp.width / 2;
                                         bmp.y = -bmp.height / 2;
                                         particale.addChild(bmp);
