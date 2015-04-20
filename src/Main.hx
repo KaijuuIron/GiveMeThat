@@ -65,6 +65,8 @@ class Main extends Sprite
 	public static var bonuses = new Array<Bonus>();
 	
 	public static var mainInstance;
+
+	public var currentPopup:String = '';
 	
 	/* ENTRY POINT */
 	
@@ -295,7 +297,9 @@ class Main extends Sprite
 	}
 	
 	static var platformsMap:Array<Int>;
+	static var platformsMapBitmaps;
 	function initPlatforms() {
+		platformsMapBitmaps = new Array<Bitmap>();
 		platformsMap = generateMap(stageLength);
 		for ( i in 0...platformsMap.length ) {			
 			var bmp;
@@ -307,6 +311,7 @@ class Main extends Sprite
 			bmp.y = fullStageHeight - platfromHeightAt(i * platfromSize);
 			bmp.x = i * platfromSize;
 			bmp.scaleY = fullStageHeight/540;
+			platformsMapBitmaps.push(bmp);
 			field.addChildAt(bmp, 1);
 		}
 	}    
@@ -539,7 +544,7 @@ class Main extends Sprite
 		globalFilter.graphics.endFill();
 		globalFilter.alpha = 1.0;
 	}
-	function onFrame(e) {				
+	function onFrame(e) {
 		layer.render();		
 		/*if ( pause && tutotalOn && (tutotalLessonCurrent == 1 )) {
 			if ( keymap.get(37) || keymap.get(65) ) continueGame(); 
@@ -549,16 +554,18 @@ class Main extends Sprite
 		}*/
 		var playerDead = player.hp <= 0;
 		var playerWon = player.x >= fieldWidthTotal - platfromSize / 2 - 20;
-		if (playerDead || playerWon) {
+		if ((playerDead || playerWon) && !gameEnded) {
 			setPause(true);
 			gameEnded = true;
 		}
 
 		if (pause) {
-			if (playerDead) {
+			if (playerDead && currentPopup.length == 0) {
 				addChild(losePopup);
-			} else if(playerWon) {
+				currentPopup = 'lose';
+			} else if(playerWon && currentPopup.length == 0) {
 				addChild(winPopup);
+				currentPopup = 'win';
 			}
 			return;
 		}
@@ -670,7 +677,7 @@ class Main extends Sprite
 	static var keymap:Map<Int,Bool> = new Map<Int,Bool>();
 	
 	function onDown(e) {	
-		//trace(e.keyCode);
+		// trace(e.keyCode);
 		keymap.set(e.keyCode, true);						
 		if (e.keyCode == 32) {
 			//space
@@ -686,7 +693,8 @@ class Main extends Sprite
 			
 		}
 		if ( e.keyCode == 79 ) {
-			//Main.resetGame();
+			//O
+			resetGame();
 		}
 		
 		if ( e.keyCode == 82 ) {
@@ -735,9 +743,11 @@ class Main extends Sprite
 		    var playerWon = player.x >= fieldWidthTotal - platfromSize / 2 - 20;
             if (!playerDead && !playerWon) {
 				addChild(pausePopup);
+				currentPopup = 'pause';
 			}			
 		} else {
 			removeChild(pausePopup);			
+			currentPopup = '';
 		}
     }
 	
@@ -760,5 +770,51 @@ class Main extends Sprite
 		Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
 		Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		Lib.current.addChild(new Main());
+	}
+
+	function resetTiles():Void {
+		for (i in 0 ... platformsMapBitmaps.length) {
+			field.removeChild(platformsMapBitmaps[i]);
+		}
+		initPlatforms();
+	}
+
+	function resetEnemies():Void {
+		for (enemy in enemies) {
+			enemy.removeFromGame();
+		}
+		fillWithMobs();
+
+	}
+
+	function resetCameraPos():Void {
+		field.x = 0;
+	}
+
+	function resetPlayer():Void {
+		player.x = platfromSize / 2;
+		player.y = fullStageHeight - platfromHeightAt(player.x) - player.sizeY / 2;
+		Player.dropWeapon();
+		player.hp = player.hpMax;
+		trackPlayerHp();
+	}
+
+	public function resetGame():Void {
+		resetTiles();
+		resetEnemies();
+		// TO-DO: reset corps
+		resetPlayer();
+		resetCameraPos();
+		switch (currentPopup) {
+			case 'lose':
+				removeChild(losePopup);
+			case 'win':
+				removeChild(winPopup);
+			case 'pause':
+				removeChild(pausePopup);
+		}			
+		currentPopup = '';
+		gameEnded = false;
+		setPause(true);
 	}
 }
