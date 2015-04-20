@@ -21,7 +21,7 @@ class Main extends Sprite
 	public static var layer:TileLayer;
 	var inited:Bool;
 	public static var framesPassed:Int = 0;
-	static var pause:Bool = false;
+	static var pause:Bool = true;
 	static var gameEnded:Bool = false;
 	
 	public static var aiSimpleFollow:AI;
@@ -53,6 +53,8 @@ class Main extends Sprite
 	static var pausePopup:Bitmap;
 	static var losePopup:Bitmap;
 	static var winPopup:Bitmap;
+
+	public static var comicsPages = new Array<Bitmap>();
 
 	public static var parallaxLayers = new Array<ParallaxLayer>();
 	public static var movedLayers = new Array<MovedLayer>();
@@ -200,10 +202,21 @@ class Main extends Sprite
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, onDown);
 		stage.addEventListener(KeyboardEvent.KEY_UP, onUp);
 
-		togglePause();
+		addChild(pausePopup);
+		setComics();
 		
 		var soundfx1 = Assets.getSound("audio/bg_music.mp3");
 	    soundfx1.play();
+	}
+
+	function setComics():Void {
+		comicsPages.push(getBitmap("img/textwon.png"));
+		comicsPages.push(getBitmap("img/textwon.png"));
+		comicsPages.push(getBitmap("img/textwon.png"));
+
+		for (i in 0 ... comicsPages.length) {
+			addChild(comicsPages[i]);
+		}
 	}
 
 	function initSheet(sheet:TilesheetEx) {
@@ -687,12 +700,18 @@ class Main extends Sprite
 		}
 	}
 
-	function togglePause():Void {		
-        pause = !pause;
-		setPause(pause);
+	function togglePause():Void {
+		setPause(!pause);
 	}
     
-    function setPause(value:Bool) {        
+    function setPause(value:Bool):Void {
+    	var comicsPagesLeft = comicsPages.length;
+    	if (comicsPagesLeft > 0) {
+    		removeChild(comicsPages[comicsPagesLeft - 1]);
+    		comicsPages.pop();
+    		return;
+    	}
+
         pause = value;
 		if (value) {
             var playerDead = player.hp <= 0;
