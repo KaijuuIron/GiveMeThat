@@ -21,7 +21,7 @@ class Main extends Sprite
 	public static var layer:TileLayer;
 	var inited:Bool;
 	public static var framesPassed:Int = 0;
-	static var pause:Bool = false;
+	static var pause:Bool = true;
 	static var gameEnded:Bool = false;
 	
 	public static var aiSimpleFollow:AI;
@@ -41,6 +41,7 @@ class Main extends Sprite
 	public static var collidables:Array<Collidable>;
 	public static var enemies:Array<Unit>;
 	public static var corpses:List<Corpse>;
+	public static var items:Array<Item> = new Array<Item>();
 	public static var particles:List<ExpandingParticle> = new List<ExpandingParticle>();
 	
 	public static var platfromSize:Int = 320;
@@ -53,6 +54,8 @@ class Main extends Sprite
 	static var pausePopup:Bitmap;
 	static var losePopup:Bitmap;
 	static var winPopup:Bitmap;
+
+	public static var comicsPages = new Array<Bitmap>();
 
 	public static var parallaxLayers = new Array<ParallaxLayer>();
 	public static var movedLayers = new Array<MovedLayer>();
@@ -200,10 +203,24 @@ class Main extends Sprite
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, onDown);
 		stage.addEventListener(KeyboardEvent.KEY_UP, onUp);
 
-		togglePause();
+		addChild(pausePopup);
+		setComics();
 		
 		var soundfx1 = Assets.getSound("audio/bg_music.mp3");
 	    soundfx1.play();
+        
+        addItem(new Item("sign"), 100);
+        addItem(new Item("sign"), 300);
+	}
+
+	function setComics():Void {
+		comicsPages.push(getBitmap("img/textwon.png"));
+		comicsPages.push(getBitmap("img/textwon.png"));
+		comicsPages.push(getBitmap("img/textwon.png"));
+
+		for (i in 0 ... comicsPages.length) {
+			addChild(comicsPages[i]);
+		}
 	}
 
 	function initSheet(sheet:TilesheetEx) {
@@ -368,6 +385,13 @@ class Main extends Sprite
 			enemies.push(unit);
 		}
 	}
+    
+    public static function addItem(item:Item, x:Float) {		
+        field.addChild(item);
+        item.x = x;
+        item.y = fullStageHeight - platfromHeightAt(x) - item.height / 2;
+        items.push(item);
+    }
 	
 	public static function truncName(name:String):String {
 		if ( name.substr(name.length - 4) == "Ally" ) {	
@@ -575,8 +599,8 @@ class Main extends Sprite
 									if (object.destroyAfterHit)	{
                                         object.destroy();
                                         var particale:ExpandingParticle	= ExpandingParticle.getParticle(object.x, object.y,
-													0xff0000, 1, 10, 0.1, -0.03);
-                                        var bmp:Bitmap = new Bitmap(Assets.getBitmapData("img/gunbullet.png"));
+													0xff0000, 1, 10, 0.05, -0.07);
+                                        var bmp:Bitmap = new Bitmap(Assets.getBitmapData("img/gunbulletnolight.png"));
                                         bmp.x = -bmp.width / 2;
                                         bmp.y = -bmp.height / 2;
                                         particale.addChild(bmp);
@@ -687,12 +711,18 @@ class Main extends Sprite
 		}
 	}
 
-	function togglePause():Void {		
-        pause = !pause;
-		setPause(pause);
+	function togglePause():Void {
+		setPause(!pause);
 	}
     
-    function setPause(value:Bool) {        
+    function setPause(value:Bool):Void {
+    	var comicsPagesLeft = comicsPages.length;
+    	if (comicsPagesLeft > 0) {
+    		removeChild(comicsPages[comicsPagesLeft - 1]);
+    		comicsPages.pop();
+    		return;
+    	}
+
         pause = value;
 		if (value) {
             var playerDead = player.hp <= 0;
