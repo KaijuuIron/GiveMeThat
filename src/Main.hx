@@ -667,8 +667,8 @@ class Main extends Sprite
 			//E
             playerShootOrder = true;
 		}
-		if (( e.keyCode == 80 ) || ( e.keyCode == 13 )) {
-			//P
+		if (( e.keyCode == 80 ) || ( e.keyCode == 13 ) || ( e.keyCode == 27 )) {
+			//P /Enter /Esc
             if (!gameEnded) {
 			    togglePause();
             }
