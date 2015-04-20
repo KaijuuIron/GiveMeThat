@@ -190,6 +190,7 @@ class Main extends Sprite
 		//spawnUnit("handman", (2 + 0.5) * platfromSize);
 		//spawnUnit("dog", (4 + 0.3) * platfromSize);
 		//spawnUnit("gun", (3 + 0.5) * platfromSize);
+        spawnUnit("dragon", (3 + 0.5) * platfromSize);
 		//spawnUnit("dogAlly", (4 + 0.8) * platfromSize);
         fillWithMobs();
 		
@@ -288,6 +289,20 @@ class Main extends Sprite
 		addDefToSheet(sheet, "evilhandmanLeg2", "img/evilhandmanlegs2.png");
 		addDefToSheet(sheet, "evilhandmanLeg3", "img/evilhandmanlegs3.png");
 		addDefToSheet(sheet, "evilhandmanlight", "img/evilhandmanlight.png");
+        
+        addDefToSheet(sheet, "dragon1", "img/dragonbody1.png");
+		addDefToSheet(sheet, "dragon2", "img/dragonbody2.png");
+		addDefToSheet(sheet, "dragon3", "img/dragonbody3.png");
+		//addDefToSheet(sheet, "evilhandman1", "img/evilhandmanlbody1.png");
+		//addDefToSheet(sheet, "evilhandman2", "img/evilhandmanlbody2.png");
+		//addDefToSheet(sheet, "evilhandman3", "img/evilhandmanlbody3.png");
+		addDefToSheet(sheet, "dragonLeg1", "img/dragonlegs1.png");
+		addDefToSheet(sheet, "dragonLeg2", "img/dragonlegs2.png");
+		addDefToSheet(sheet, "dragonLeg3", "img/dragonlegs3.png");        
+		//addDefToSheet(sheet, "evilhandmanLeg1", "img/evilhandmanlegs1.png");
+		//addDefToSheet(sheet, "evilhandmanLeg2", "img/evilhandmanlegs2.png");
+		//addDefToSheet(sheet, "evilhandmanLeg3", "img/evilhandmanlegs3.png");
+		//addDefToSheet(sheet, "evilhandmanlight", "img/evilhandmanlight.png");
 	}
 	
 	function addDefToSheet(sheet:TilesheetEx, name:String, bmp:String) {
@@ -443,6 +458,15 @@ class Main extends Sprite
 			newMonster.attackSpeed = 40;
 			newMonster.ranged = false;
 		}
+        if (truncName(newMonster.unitType) == "dragon" ) {
+			newMonster.sizeX = 150;
+			newMonster.sizeY = 150;
+			newMonster.movespeed = 6;
+			newMonster.hpMax = 100;
+			newMonster.dmg = 25;
+			newMonster.attackSpeed = 60;
+			newMonster.ranged = false;
+		}
 		if ( newMonster.unitType == "dogAlly" ) {
 			newMonster.infected = false;
 			newMonster.ai = aiAlly;
@@ -476,6 +500,17 @@ class Main extends Sprite
 			newMonster.spriteLegs1 = new TileSprite(layer, "handmanLeg1");
 			newMonster.spriteLegs2 = new TileSprite(layer, "handmanLeg2");
 			newMonster.spriteLegsJump = new TileSprite(layer, "handmanLeg3");
+		}
+        if ( newMonster.unitType == "dragonAlly" ) {
+			newMonster.infected = false;
+			newMonster.ai = aiAlly;
+			
+			newMonster.spriteBody1 = new TileSprite(layer, "dragon1");
+			newMonster.spriteBody2 = new TileSprite(layer, "dragon2");
+			newMonster.spriteBody3 = new TileSprite(layer, "dragon3");
+			newMonster.spriteLegs1 = new TileSprite(layer, "dragonLeg1");
+			newMonster.spriteLegs2 = new TileSprite(layer, "dragonLeg2");
+			newMonster.spriteLegsJump = new TileSprite(layer, "dragonLeg3");
 		}
 		if ( newMonster.unitType.substr(newMonster.unitType.length - 4) != "Ally" ) {	
 			newMonster.infect();

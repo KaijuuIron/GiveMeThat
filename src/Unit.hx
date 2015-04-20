@@ -558,6 +558,15 @@ class Unit extends Collidable
 			spriteLegsJump = new TileSprite(Main.layer, "evilhandmanLeg3");
 			ai = Main.aiSimpleFollow;
 		}
+        if ( unitType == "dragon" ) {			
+			spriteBody1 = new TileSprite(Main.layer, "dragon1");
+			spriteBody2 = new TileSprite(Main.layer, "dragon2");
+			spriteBody3 = new TileSprite(Main.layer, "dragon3");
+			spriteLegs1 = new TileSprite(Main.layer, "dragonLeg1");
+			spriteLegs2 = new TileSprite(Main.layer, "dragonLeg2");
+			spriteLegsJump = new TileSprite(Main.layer, "dragonLeg3");
+			ai = Main.aiSimpleFollow;
+		}
 		infected = true;
 		//positionSprites();
 	}
