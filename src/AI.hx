@@ -80,7 +80,7 @@ class AI
         if ( !unit.infected ) {
             if (unit.x + Main.field.x <= 0) {
                 unit.removeFromGame();
-                Main.mainInstance.addBonus();
+                Main.mainInstance.addBonus(unit);
             }
         }
     }
@@ -103,7 +103,7 @@ class AI
 				}
 			}
 		}
-		if ( dist < sightDist * 0.75 ) {
+		if ( dist < sightDist * 0.5 ) {
 			return target;
 		}
 		return null;

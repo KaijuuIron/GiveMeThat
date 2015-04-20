@@ -19,6 +19,7 @@ class Player
 	
 	public static var highlightType:String = "none";
 	public static var highlightedUnit:Unit;
+	public static var highlightedCorpse:Corpse;
 	private static var highlightSpriteDog:TileSprite;
 	private static var highlightSpriteGun:TileSprite;
 	private static var highlightSpriteHandman:TileSprite;
@@ -67,7 +68,7 @@ class Player
         
 		if ( next == "gun" ) {
             attackCharges = 5;
-            player.dmg = 20;
+            player.dmg = 15;
             player.ranged = true;
             strikeAreaX = 100;
             strikeAreaY = 200;
@@ -78,7 +79,7 @@ class Player
         
 		if ( next == "hand" ) {
             attackCharges = 6;
-            player.dmg = 30;
+            player.dmg = 20;
             player.ranged = false;
             strikeAreaX = 150;
             strikeAreaY = 200;
@@ -105,12 +106,23 @@ class Player
     public static function redHandTick() {
         if ( redHandSprite.visible = true ) {
             redHandSprite.x = player.x + 60 * player.lastDirection;
-            redHandSprite.y = player.y - 30;
+            redHandSprite.y = player.y - 55;
             redHandSprite.mirror = player.lastDirection <= 0 ? 1 : 0;
             --redHandTime;
+            if ( !player.onCharge() ) {
+                if (( redHandTime > 20 ) && (playerWeapon == "fists")) {
+                    if ( redHandTime > 25 ) {
+                        player.setAnimTo(2);
+                    } else {
+                        player.setAnimTo(3);
+                    }
+                } else {
+                    player.setAnimTo(1);
+                }
+            }
             redHandSprite.alpha = 0.5 + (0.5 * redHandTime / 30);
             if ( redHandTime <= 0 ) {
-                redHandSprite.visible = false;
+                redHandSprite.visible = false;                
             }
         }
     }
@@ -124,9 +136,9 @@ class Player
     }
 	
 	public static function attemptGrab():Bool {
+        redHandOn();
 		if (( highlightType == "unit" ) && (player.distanceXBetween(highlightedUnit) <= grabRange)) {
-			if ( grabbable(highlightedUnit) ) {                
-                redHandOn();
+			if ( grabbable(highlightedUnit) ) {                                
 				if ( highlightedUnit.unitType == "dog" ) {
 					highlightedUnit.removeFromGame();
 					swapWeapon("dog");
@@ -144,6 +156,15 @@ class Player
 				}
 			}
 		}
+        if (( highlightType == "corpse" ) && (player.distanceOuterTo(highlightedCorpse.x, highlightedCorpse.y) - highlightedCorpse.sizeX / 2 <= grabRange)) {            
+			if ( grabbableCorpse(highlightedCorpse) ) {                
+                if ( highlightedCorpse.sourceUnittype== "gun" ) {
+					highlightedCorpse.removeBodyPart();
+					swapWeapon("gun");
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 	
@@ -152,6 +173,13 @@ class Player
 		if (unit.unitType == "dog")	return (playerWeapon=="fists");
 		if (unit.unitType == "gun")	return (unit.hp/unit.hpMax < 0.75);
 		if (unit.unitType == "handman")	return (unit.hp/unit.hpMax < 0.5);
+		return false;
+	}
+    
+    private static function grabbableCorpse(corpse:Corpse):Bool {
+        if ( corpse.noBody )  return false;
+		if (corpse.sourceUnittype == "gun")	return true;
+		if (corpse.sourceUnittype == "handman")	return true;
 		return false;
 	}
 	
@@ -170,6 +198,20 @@ class Player
 				}
 			}
 		}
+        for ( corpse in Main.corpses ) {
+            if ( grabbableCorpse(corpse) ) {
+                if ( player.distanceOuterTo(corpse.x, corpse.y) - corpse.sizeX/2 < grabRange) {
+					if(!sameHighlightCorpse(corpse))	highlightRemove();
+					highlightCorpse(corpse);
+					return;
+				}
+				if ( player.distanceOuterTo(corpse.x, corpse.y) - corpse.sizeX/2 < grabRange * 3) {
+					if(!sameHighlightCorpse(corpse))	highlightRemove();
+					highlightCorpse(corpse);
+					return;
+				}
+            }
+        }
 		highlightRemove();
 	}
 	
@@ -182,6 +224,12 @@ class Player
 				highlightUnitToSprite.get(highlightedUnit.unitType).alpha = (1 - player.distanceXBetween(highlightedUnit) / (3*grabRange));
 			}
 		}
+        if ( highlightType == "corpse" ) {
+            highlightUnitToSprite.get(highlightedCorpse.sourceUnittype).x = highlightedCorpse.x;
+            highlightUnitToSprite.get(highlightedCorpse.sourceUnittype).y = highlightedCorpse.y;
+            highlightUnitToSprite.get(highlightedCorpse.sourceUnittype).mirror = highlightedCorpse.getMirror();
+            highlightUnitToSprite.get(highlightedCorpse.sourceUnittype).alpha = (1 - (player.distanceOuterTo(highlightedCorpse.x, highlightedCorpse.y) - highlightedCorpse.sizeX/2) / (3*grabRange));
+        }
 	}
 	
 	private static function highlightRemove() {
@@ -193,6 +241,11 @@ class Player
 			highlightType = "none";
 			highlightedUnit = null;
 		}
+        if ( highlightType == "corpse" ) {
+            highlightUnitToSprite.get(highlightedCorpse.sourceUnittype).visible = false;
+            highlightType = "none";
+            highlightedCorpse = null;
+        }
 	}
 	
 	private static function highlightUnit(unit:Unit) {
@@ -204,8 +257,21 @@ class Player
 		highlightPosUpdate();
 	}
 	
+    private static function highlightCorpse(corpse:Corpse) {
+		if (!sameHighlightCorpse(corpse)) {
+			highlightType = "corpse";
+			highlightedCorpse = corpse;
+			highlightUnitToSprite.get(highlightedCorpse.sourceUnittype).visible = true;
+		}
+		highlightPosUpdate();
+	}
+    
 	private static function sameHighlight(unit:Unit) {
 		return (( highlightType == "unit" ) && (highlightedUnit == unit));
+	}
+    
+    private static function sameHighlightCorpse(corpse:Corpse) {
+		return (( highlightType == "corpse" ) && (highlightedCorpse == corpse));
 	}
    
     private static function registerSprite(sprite:TileSprite) {

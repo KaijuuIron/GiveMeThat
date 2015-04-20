@@ -13,18 +13,23 @@ class Corpse extends Sprite
 	var ttlRem:Int;
 	var sprite:TileSprite;
 	var sprite2:TileSprite;
+    public var noBody:Bool = true;
+    public var sourceUnittype:String = "none";
+    public var sizeX:Float = 0;
 	public function new(source:Unit) 
 	{
 		super();
 		if ( source != null) {
-			//TODO: something
-			if ( source.spriteBody1 != null )	{
+            sizeX = source.sizeX;
+            sourceUnittype = source.unitType;
+            this.noBody = source.noBody;
+			if (( source.spriteBody1 != null ) && !noBody)	{
 				sprite = source.spriteBody1;
 				sprite.visible = true;
 				//sprite.blendMode = BlendMode.DARKEN;
 				Main.layer.addChild(sprite);				
 				sprite.x = source.x;
-				sprite.y = source.y;
+				sprite.y = source.y;                
 			}
 			if ( source.spriteLegs1 != null )	{
 				sprite2 = source.spriteLegs1;
@@ -47,8 +52,28 @@ class Corpse extends Sprite
 			Main.corpses.remove(this);
 			return;
 		}
-		if(sprite!=null) sprite.alpha = 0.1 + 0.9 * ttlRem / ttlMax;		
-		if(sprite2!=null) sprite2.alpha = 0.1 + 0.9 * ttlRem / ttlMax;		
+		if (sprite != null) {
+            sprite.alpha = 0.1 + 0.7 * ttlRem / ttlMax;		
+            this.x = sprite.x;
+            this.y = sprite.y;
+        }
+		if (sprite2 != null) sprite2.alpha = 0.1 + 0.7 * ttlRem / ttlMax;		
+        
 	}
 	
+    public function getMirror():Int {
+        if (sprite != null)    return sprite.mirror;
+        if (sprite2 != null)    return sprite2.mirror;
+        return 0;
+    }
+    
+    public function removeBodyPart() {
+        if ( !noBody) {
+            noBody = true;
+            if (sprite != null) {                
+                Main.layer.removeChild(sprite);
+                sprite = null;
+            }
+        }
+    }
 }

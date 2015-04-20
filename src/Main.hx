@@ -44,7 +44,7 @@ class Main extends Sprite
 	public static var particles:List<ExpandingParticle> = new List<ExpandingParticle>();
 	
 	public static var platfromSize:Int = 320;
-	public static var stageLength:Int = 35;
+	public static var stageLength:Int = 50;
 	
 	static var globalFilter:Sprite;
 	static var hpBar:Sprite;
@@ -403,7 +403,7 @@ class Main extends Sprite
 			newMonster.sizeX = 150;
 			newMonster.sizeY = 110;
 			newMonster.movespeed = 4;
-			newMonster.hpMax = 50;
+			newMonster.hpMax = 40;
 			newMonster.dmg = 15;
 			newMonster.attackSpeed = 40;
 			newMonster.ranged = false;
@@ -572,7 +572,16 @@ class Main extends Sprite
 									} else {
 										another.takeDamage(0);
 									}
-									if (object.destroyAfterHit)	object.destroy();
+									if (object.destroyAfterHit)	{
+                                        object.destroy();
+                                        var particale:ExpandingParticle	= ExpandingParticle.getParticle(object.x, object.y,
+													0xff0000, 1, 10, 0.1, -0.03);
+                                        var bmp:Bitmap = new Bitmap(Assets.getBitmapData("img/gunbullet.png"));
+                                        bmp.x = -bmp.width / 2;
+                                        bmp.y = -bmp.height / 2;
+                                        particale.addChild(bmp);
+                                        Main.field.addChild(particale);
+                                    }
 								}
 							}
 							}
@@ -609,7 +618,7 @@ class Main extends Sprite
 		}
 
 		for ( i in 0...bonuses.length ) {
-			bonuses[i].onFrame();
+			if (bonuses[i] != null)    bonuses[i].onFrame();            
 		}
 
 		traceCamera();
@@ -703,8 +712,8 @@ class Main extends Sprite
 		}
 	}
 
-	public function addBonus() {
-		var bonus = new Bonus();
+	public function addBonus(unit:Unit) {
+		var bonus = new Bonus(unit.y);
 		bonuses.push(bonus);
 		field.addChild(bonus);
 	}
