@@ -736,7 +736,9 @@ class Main extends Sprite
 		}
 		if ( e.keyCode == 79 ) {
 			//O
-			resetGame();
+			if (gameEnded) {
+				resetGame();
+			}
 		}
 		
 		if ( e.keyCode == 82 ) {
